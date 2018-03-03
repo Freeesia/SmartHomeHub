@@ -4,3 +4,5 @@ npm-debug.log
 .settings/*
 .git/*
 bower_components/*
+app/**/*.js
+app/**/*.js.map
