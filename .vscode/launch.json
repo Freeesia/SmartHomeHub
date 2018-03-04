@@ -1,33 +1,35 @@
 {
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"name": "Launch",
-			"type": "node",
-			"request": "launch",
-			"program": "${workspaceRoot}/app/bin/www.js",
-			"stopOnEntry": false,
-			"args": [],
-			"cwd": "${workspaceRoot}/",
-			"runtimeExecutable": null,
-			"runtimeArgs": [
-				"--nolazy",
-				"--harmony"
-			],
-			"env": {
-				"NODE_ENV": "development",
-				"PORT": "3000"
-			},
-			"sourceMaps": true,
-			"outFiles": [
-				"${workspaceRoot}/app/*"
-			]
-		},
-		{
-			"name": "Attach",
-			"type": "node",
-			"request": "attach",
-			"port": 5858
-		}
-	]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceRoot}/app/bin/www.js",
+      "stopOnEntry": false,
+      "args": [],
+      "cwd": "${workspaceRoot}/",
+      "runtimeExecutable": null,
+      "runtimeArgs": [
+        "--nolazy",
+        "--harmony"
+      ],
+      "env": {
+        "NODE_ENV": "development",
+        "PORT": "3000"
+      },
+      "sourceMaps": true,
+      "outFiles": [
+        "${workspaceRoot}/app/*"
+      ]
+    },
+    {
+      "name": "Attach",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "remoteRoot": "/usr/src/app",
+      "localRoot": "${workspaceRoot}"
+    }
+  ]
 }
