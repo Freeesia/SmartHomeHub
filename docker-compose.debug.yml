@@ -1,8 +1,8 @@
 version: '2.1'
 
 services:
-  smarthomehub:
-    image: smarthomehub
+  smart_home_hub:
+    image: smart_home_hub
     build: .
     environment:
       NODE_ENV: development
