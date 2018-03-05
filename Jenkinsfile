@@ -4,8 +4,9 @@ pipeline {
     stage('Run') {
       steps {
         withCredentials([file(credentialsId: '54e58df6-0a66-45d2-bc31-21fcab380ff5', variable: 'FILE')]) {
+        withCredentials([file(credentialsId: 'docker-compose.release.yml', variable: 'COMPOSE_YML')]) {
           sh 'cp $FILE .env'
-          sh 'docker-compose up -d --build'
+          sh 'docker-compose up -d --build -f $COMPOSE_YML --project-directory .'
         }
       }
     }
