@@ -7,7 +7,7 @@ pipeline {
         withCredentials([file(credentialsId: 'docker-compose.release.yml', variable: 'COMPOSE_YML')]) {
           sh 'cp $FILE .env'
           sh 'docker-compose up -d --build -f $COMPOSE_YML --project-directory .'
-        }
+        }}
       }
     }
   }
