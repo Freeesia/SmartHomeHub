@@ -13,7 +13,6 @@
     "ejs": "^2.5.6",
     "express": "^4.15.2",
     "google-tts-api": "0.0.2",
-    "minio": "^4.0.0",
     "morgan": "^1.8.1",
     "serve-favicon": "^2.4.1",
     "voicetext": "0.0.7"
@@ -24,7 +23,6 @@
     "@types/ejs": "^2.3.33",
     "@types/express": "^4.0.35",
     "@types/dotenv": "^4.0.2",
-    "@types/minio": "^4.0.1",
     "@types/morgan": "^1.7.32",
     "@types/node": "^7.0.10",
     "@types/serve-favicon": "^2.2.28"

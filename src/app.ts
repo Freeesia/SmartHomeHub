@@ -8,11 +8,13 @@ import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as dotenv from "dotenv";
 import * as ejs from 'ejs';
+import * as url from 'url';
 
 dotenv.config();
 
 import index from './routes/index';
-import googleHome from './routes/api/google_home';
+import * as googleHome from './routes/api/google_home';
+googleHome.init(url.resolve('http://' + process.env.baseUrl, 'api/googlehome/'));
 
 const app: express.Express = express();
 
@@ -31,7 +33,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/api', googleHome);
+app.use('/api/googlehome', googleHome.default);
 
 //catch 404 and forward to error handler
 app.use((req, res, next) => {

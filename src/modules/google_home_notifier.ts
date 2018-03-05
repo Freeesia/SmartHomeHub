@@ -1,7 +1,8 @@
-import { Client as minio, ClientOptions } from 'minio';
 import { Client as castv2, DefaultMediaReceiver } from 'castv2-client';
 import * as googletts from 'google-tts-api';
 import * as voicetext from 'voicetext';
+import * as crypto from 'crypto';
+import * as url from 'url';
 const SPEAKER = voicetext.prototype.SPEAKER;
 const EMOTION = voicetext.prototype.EMOTION;
 const EMOTION_LEVEL = voicetext.prototype.EMOTION_LEVEL;
@@ -9,13 +10,14 @@ const EMOTION_LEVEL = voicetext.prototype.EMOTION_LEVEL;
 export default class GoogleHomeNotifier {
 
   private options: GoogleHomeNotifierOptions;
+  public dic = {};
 
   constructor(options: GoogleHomeNotifierOptions) {
     this.options = options;
   }
 
-  private async speak(text: string) {
-    return new Promise((resolve, reject) => {
+  private async speak(text: string): Promise<Buffer> {
+    return new Promise<Buffer>((resolve, reject) => {
       const voice = new voicetext(this.options.voiceKey);
       voice
         .speaker(SPEAKER.HIKARI)
@@ -28,29 +30,25 @@ export default class GoogleHomeNotifier {
     });
   }
 
-  private async putObject(buf): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      const op = this.options.minioOptions;
-      const client = new minio(op);
-      client.putObject('google-home', 'tmp.wav', buf, (err, res) => {
-        if (err) return reject(err);
-        // TODO : 合ってる？
-        const proto = op.secure ? 'https' : 'http'
-        resolve(`${proto}://${op.endPoint}:${op.port}/google-home/tmp.wav`);
-      });
-    });
-  }
-
-  public async notify(text: string, language: string) {
+  public async notify(text: string, language: string): Promise<string> {
     const url = await googletts(text, language, 1, 1000);
     return await this.onDeviceUp(this.options.googleHomeUrl, url);
   };
 
-  public async play(text: string) {
+  public async play(text: string): Promise<string> {
     const buf = await this.speak(text);
-    const url = await this.putObject(buf);
-    return await this.onDeviceUp(this.options.googleHomeUrl, url);
+    const md5sum = crypto.createHash('md5')
+    md5sum.update(buf);
+    const md5 = md5sum.digest('hex');
+    this.dic[md5] = buf;
+    return await this.onDeviceUp(this.options.googleHomeUrl, url.resolve(this.options.baseUrl, md5));
   };
+
+  public pop(md5: string): Buffer {
+    const buf = this.dic[md5];
+    delete this.dic[md5];
+    return buf;
+  }
 
   private async onDeviceUp(host: string, url: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
@@ -77,7 +75,7 @@ export default class GoogleHomeNotifier {
 }
 
 export interface GoogleHomeNotifierOptions {
-  voiceKey: string;
   googleHomeUrl: string;
-  minioOptions: ClientOptions;
+  baseUrl: string;
+  voiceKey: string;
 }
