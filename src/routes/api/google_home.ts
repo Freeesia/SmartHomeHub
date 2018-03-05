@@ -15,7 +15,8 @@ router.post('/twitter', async (req, res, next) => {
   if (req.body.user === "FreesiaDevelop") {
     res.sendStatus(400);
   } else {
-    const text = `${req.body.user}が\n${req.body.text}\nだって`
+    const re = /^@.*?\s/;
+    const text = `${req.body.user}が\n${req.body.text.replace(re, '')}\nだって`
     await notifier.play(text);
     res.sendStatus(200);
   }
