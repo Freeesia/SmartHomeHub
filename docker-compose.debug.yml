@@ -2,11 +2,12 @@ version: '2.1'
 
 services:
   smart_home_hub:
-    image: smart_home_hub
-    build: .
     environment:
       NODE_ENV: development
     ports:
       - 3000:3000
       - 9229:9229
+    extends:
+      file: docker-compose.yml
+      service: smart_home_hub
     command: node --inspect=0.0.0.0:9229 app/bin/www.js
