@@ -6,10 +6,19 @@ import * as url from 'url';
 const router = express.Router();
 let notifier: GoogleHomeNotifier;
 
-/* GET home page. */
 router.post('/', async (req, res, next) => {
   await notifier.play(req.body.text);
   res.sendStatus(200);
+});
+
+router.post('/twitter', async (req, res, next) => {
+  if (req.body.user === "FreesiaDevelop") {
+    res.sendStatus(400);
+  } else {
+    const text = `${req.body.user}が\n${req.body.text}\nだって`
+    await notifier.play(text);
+    res.sendStatus(200);
+  }
 });
 
 router.get('/:md5', (req, res, next) => {
