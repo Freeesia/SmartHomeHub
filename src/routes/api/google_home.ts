@@ -13,7 +13,7 @@ router.post('/', async (req, res, next) => {
 
 router.post('/twitter', async (req, res, next) => {
   if (req.body.user === "FreesiaDevelop") {
-    res.sendStatus(400);
+    res.sendStatus(200);
   } else {
     const re = /^@.*?\s/;
     const text = `${req.body.user}が\n${req.body.text.replace(re, '')}\nだって`
@@ -25,6 +25,12 @@ router.post('/twitter', async (req, res, next) => {
 router.get('/:md5', (req, res, next) => {
   res.contentType('mp3');
   res.send(notifier.pop(req.params.md5));
+});
+
+
+router.post('/notify', async (req, res, next) => {
+  await notifier.notify(req.body.text, 'ja');
+  res.sendStatus(200);
 });
 
 export function init(baseUrl: string) {
