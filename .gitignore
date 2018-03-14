@@ -8,3 +8,4 @@ bower_components/*
 docker-compose.release.yml
 app/**/*.js
 app/**/*.js.map
+hosts

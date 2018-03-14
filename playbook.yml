@@ -1,0 +1,46 @@
+- hosts: all
+  user: root
+  tasks:
+    - npm:
+        name: '{{ item }}'
+        global: yes
+      with_items:
+        - typescript
+        - forever
+    - copy:
+        src: ./{{ item }}
+        dest: /work/
+      with_items:
+        - app
+        - src
+        - package.json
+        - package-lock.json
+        - tsconfig.json
+    - npm:
+        path: /work
+        state: latest
+    - command: tsc -p .
+      args:
+        chdir: /work
+    - file:
+        path: /shh
+        state: directory
+    - copy:
+        src: ./{{ item }}
+        dest: /shh/
+      with_items:
+        - package.json
+        - package-lock.json
+    - npm:
+        path: /shh
+        state: latest
+        production: yes
+    - command: mv /work/app /shh/app
+    - firewalld:
+        port: 3000/tcp
+        permanent: true
+        immediate: true
+        state: enabled
+    - command: forever start /shh/app/bin/www.js
+      become: ture
+      become_user: nobody
