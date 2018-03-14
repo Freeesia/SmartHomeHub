@@ -4,8 +4,9 @@ npm-debug.log
 .settings/*
 .git/*
 bower_components/*
-.env
-docker-compose.release.yml
+
 app/**/*.js
 app/**/*.js.map
+
+config.json
 hosts
