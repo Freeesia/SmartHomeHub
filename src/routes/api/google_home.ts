@@ -1,6 +1,6 @@
 'use strict';
 
-import GoogleHomeNotifier from '../../modules/google_home_notifier';
+import GoogleHomeNotifier, { GoogleHomeNotifierOptions } from '../../modules/google_home_notifier';
 import * as express from 'express';
 import * as url from 'url';
 const router = express.Router();
@@ -33,12 +33,9 @@ router.post('/notify', async (req, res, next) => {
   res.sendStatus(200);
 });
 
-export function init(baseUrl: string) {
-  notifier = new GoogleHomeNotifier({
-    baseUrl: baseUrl,
-    googleHomeUrl: process.env.googleHomeUrl,
-    voiceKey: process.env.voiceKey,
-  })
+export function init(config: GoogleHomeNotifierOptions) {
+  config.baseUrl = url.resolve('http://' + config.baseUrl, 'api/googlehome/')
+  notifier = new GoogleHomeNotifier(config);
 }
 
 export default router;

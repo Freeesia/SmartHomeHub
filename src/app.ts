@@ -6,15 +6,15 @@ import * as favicon from 'serve-favicon';
 import * as logger from 'morgan';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
-import * as dotenv from "dotenv";
+import * as fs from 'fs';
 import * as ejs from 'ejs';
 import * as url from 'url';
 
-dotenv.config();
+const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 
 import index from './routes/index';
 import * as googleHome from './routes/api/google_home';
-googleHome.init(url.resolve('http://' + process.env.baseUrl, 'api/googlehome/'));
+googleHome.init(config);
 
 const app: express.Express = express();
 
