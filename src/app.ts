@@ -14,7 +14,9 @@ const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 
 import index from './routes/index';
 import * as googleHome from './routes/api/google_home';
-googleHome.init(config);
+import * as ps4 from './routes/api/ps4';
+googleHome.init(config.googlehome);
+ps4.init(config.ps4);
 
 const app: express.Express = express();
 
@@ -34,6 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/api/googlehome', googleHome.default);
+app.use('/api/ps4', ps4.default);
 
 //catch 404 and forward to error handler
 app.use((req, res, next) => {

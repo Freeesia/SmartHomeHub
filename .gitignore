@@ -9,4 +9,5 @@ app/**/*.js
 app/**/*.js.map
 
 config.json
+ps4-wake.credentials.json
 hosts
