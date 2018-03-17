@@ -31,16 +31,26 @@
       with_items:
         - package.json
         - package-lock.json
+        - config.json
+        - ps4-wake.credentials.json
     - npm:
         path: /shh
         state: latest
         production: yes
-    - command: mv /work/app /shh/app
+    - command: cp -fRT /work/app /shh/app
+    - file:
+        path: /work
+        state: absent
     - firewalld:
         port: 3000/tcp
         permanent: true
         immediate: true
         state: enabled
-    - command: forever start /shh/app/bin/www.js
+    - firewalld:
+        port: 3000/udp
+        permanent: true
+        immediate: true
+        state: enabled
+    - command: forever start --workingDir=/shh /shh/app/bin/www.js
       become: ture
       become_user: nobody

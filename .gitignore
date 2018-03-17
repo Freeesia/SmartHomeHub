@@ -4,6 +4,7 @@ npm-debug.log
 .settings/*
 .git/*
 bower_components/*
+*.retry
 
 app/**/*.js
 app/**/*.js.map
