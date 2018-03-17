@@ -51,6 +51,13 @@
         permanent: true
         immediate: true
         state: enabled
+    - command: forever list
+      register: result
     - command: forever start --workingDir=/shh /shh/app/bin/www.js
+      when: result.stdout.find('/shh/app/bin/www.js') == -1
+      become: ture
+      become_user: nobody
+    - command: forever restart --workingDir=/shh /shh/app/bin/www.js
+      when: result.stdout.find('/shh/app/bin/www.js') != -1
       become: ture
       become_user: nobody
