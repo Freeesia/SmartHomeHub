@@ -17,7 +17,8 @@
     "morgan": "^1.8.1",
     "ps4-waker": "^1.4.3",
     "serve-favicon": "^2.4.1",
-    "voicetext": "0.0.7"
+    "voicetext": "0.0.7",
+    "wol": "^1.0.3"
   },
   "devDependencies": {
     "@types/body-parser": "1.16.1",

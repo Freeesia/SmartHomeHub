@@ -15,8 +15,10 @@ const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 import index from './routes/index';
 import * as googleHome from './routes/api/google_home';
 import * as ps4 from './routes/api/ps4';
+import * as pc from './routes/api/pc';
 googleHome.init(config.googlehome);
 ps4.init(config.ps4);
+pc.init(config.pc);
 
 const app: express.Express = express();
 
@@ -37,6 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/api/googlehome', googleHome.default);
 app.use('/api/ps4', ps4.default);
+app.use('/api/pc', pc.default);
 
 //catch 404 and forward to error handler
 app.use((req, res, next) => {
