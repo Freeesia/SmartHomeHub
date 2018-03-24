@@ -33,6 +33,7 @@
         - package-lock.json
         - config.json
         - ps4-wake.credentials.json
+        - forever.json
     - npm:
         path: /shh
         state: latest
@@ -51,13 +52,17 @@
         permanent: true
         immediate: true
         state: enabled
+    - cron:
+        name: SmartHomeHub
+        special_time: reboot
+        job: forever start /shh/forever.json
     - command: forever list
       register: result
-    - command: forever start --workingDir=/shh /shh/app/bin/www.js
+    - command: forever start /shh/forever.json
       when: result.stdout.find('/shh/app/bin/www.js') == -1
       become: ture
       become_user: nobody
-    - command: forever restart --workingDir=/shh /shh/app/bin/www.js
+    - command: forever restart /shh/app/bin/www.js
       when: result.stdout.find('/shh/app/bin/www.js') != -1
       become: ture
       become_user: nobody
