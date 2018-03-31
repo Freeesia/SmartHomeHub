@@ -1,0 +1,6 @@
+- hosts: docker
+  become: yes
+  vars_files:
+    - dev_host.yml
+  roles:
+    - proxy

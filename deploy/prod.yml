@@ -1,0 +1,6 @@
+- hosts: docker
+  sudo: yes
+  vars_files:
+    - prod_host.yml
+  roles:
+    - proxy

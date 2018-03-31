@@ -1,0 +1,21 @@
+- yum:
+    name: epel-release
+- yum:
+    name: python-pip
+- pip:
+    name: docker-py
+- docker_container:
+    name: '{{ con_name }}'
+    image: silasdavis/socat-proxy
+    restart_policy: always
+    recreate: yes
+    network_mode: bridge
+    published_ports: 3000
+    env:
+      PORT: 3000
+      TARGET: '{{ target }}'
+      VIRTUAL_HOST: '{{ host }}'
+      VIRTUAL_PORT: 3000
+      LETSENCRYPT_HOST: '{{ host }}'
+      LETSENCRYPT_EMAIL: '{{ email }}'
+

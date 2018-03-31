@@ -1,4 +1,4 @@
-- hosts: all
+- hosts: deploy
   user: root
   tasks:
     - npm:
