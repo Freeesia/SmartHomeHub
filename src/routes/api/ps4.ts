@@ -33,10 +33,10 @@ router.post('/off', async (req, res, next) => {
 
 router.post('/key/:key', async (req, res, next) => {
   try {
-    if (!this.ps4.isConnected()) {
+    if (!this.ps4.isConnected) {
       await this.ps4.turnOn();
     }
-    await this.ps4.sendKeys(req.params.key)
+    await this.ps4.sendKeys([req.params.key])
     res.sendStatus(200);
   } catch (error) {
     next(error);
@@ -45,7 +45,7 @@ router.post('/key/:key', async (req, res, next) => {
 
 router.post('/:title', async (req, res, next) => {
   try {
-    if (!this.ps4.isConnected()) {
+    if (!this.ps4.isConnected) {
       await this.ps4.turnOn();
     }
     switch (req.params.title) {
