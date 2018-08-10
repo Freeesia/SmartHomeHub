@@ -1,5 +1,6 @@
 import { Configuration } from 'webpack';
 import * as HtmlPlugin from 'html-webpack-plugin';
+import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import * as path from 'path';
 
 const src = path.join(__dirname, 'views');
@@ -17,11 +18,20 @@ const config: Configuration = {
       {
         test: /\.ts$/,
         loader: 'ts-loader',
-        exclude: /node_modules/
       },
+      {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+        ]
+      }
     ]
   },
   plugins: [
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+    }),
     new HtmlPlugin({ template: path.join(src, 'index.html') }),
   ],
   output: {
