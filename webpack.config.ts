@@ -11,7 +11,10 @@ const config: Configuration = {
     'bundle': path.join(src, 'boot-app.ts'),
   },
   resolve: {
-    extensions: ['.ts']
+    extensions: ['.ts'],
+    alias: {
+      'vue$': 'vue/dist/vue.esm.js'
+    },
   },
   module: {
     rules: [
@@ -19,6 +22,7 @@ const config: Configuration = {
         test: /\.ts$/,
         loader: 'ts-loader',
       },
+      { test: /\.html/, loader: 'html-loader?minimize=false'},
       {
         test: /\.css$/,
         use: [
@@ -28,6 +32,7 @@ const config: Configuration = {
       }
     ]
   },
+  devtool: 'source-map',
   plugins: [
     new MiniCssExtractPlugin({
       filename: '[name].css',

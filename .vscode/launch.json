@@ -19,9 +19,7 @@
         "PORT": "3000"
       },
       "sourceMaps": true,
-      "outFiles": [
-        "${workspaceRoot}/app/*"
-      ]
+      "preLaunchTask": "build"
     },
     {
       "name": "Attach",
