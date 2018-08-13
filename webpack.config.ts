@@ -3,7 +3,7 @@ import * as HtmlPlugin from 'html-webpack-plugin';
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import * as path from 'path';
 
-const src = path.join(__dirname, 'views');
+const src = path.join(__dirname, 'client');
 
 const config: Configuration = {
   context: src,
