@@ -1,9 +1,11 @@
 import { Configuration } from 'webpack';
 import * as HtmlPlugin from 'html-webpack-plugin';
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import * as LiveReloadPlugin from 'webpack-livereload-plugin';
 import * as path from 'path';
 
-const src = path.join(__dirname, 'client');
+const src = path.join(__dirname, '..', 'client');
+const dst = path.join(__dirname, '..', 'app', 'public');
 
 const config: Configuration = {
   context: src,
@@ -22,7 +24,7 @@ const config: Configuration = {
         test: /\.ts$/,
         loader: 'ts-loader',
       },
-      { test: /\.html/, loader: 'html-loader?minimize=false'},
+      { test: /\.html/, loader: 'html-loader?minimize=false' },
       {
         test: /\.css$/,
         use: [
@@ -37,10 +39,13 @@ const config: Configuration = {
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
+    new LiveReloadPlugin({ appendScriptTag: true }),
     new HtmlPlugin({ template: path.join(src, 'index.html') }),
   ],
   output: {
     filename: '[name].js',
+    path: dst,
+    publicPath: '/',
   }
 }
 

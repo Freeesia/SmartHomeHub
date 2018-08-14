@@ -9,6 +9,18 @@ import * as bodyParser from 'body-parser';
 import * as fs from 'fs';
 
 const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+const app: express.Express = express();
+
+import * as webpack from 'webpack';
+import * as webpackDevMiddleware from 'webpack-dev-middleware';
+import wpConfig from './webpack.config';
+if (process.env.NODE_ENV === 'development') {
+  wpConfig.mode = 'development';
+  const compiler = webpack(wpConfig);
+  app.use(webpackDevMiddleware(compiler, {
+    publicPath: wpConfig.output.publicPath
+  }));
+}
 
 import * as googleHome from './routes/api/google_home';
 import * as ps4 from './routes/api/ps4';
@@ -16,8 +28,6 @@ import * as pc from './routes/api/pc';
 googleHome.init(config.googlehome);
 ps4.init(config.ps4);
 pc.init(config.pc);
-
-const app: express.Express = express();
 
 //uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname,'public','favicon.ico')));

@@ -3,7 +3,7 @@ import * as WebpackStream from 'webpack-stream';
 import * as Webpack from 'webpack';
 import * as ts from 'gulp-typescript';
 import * as sourcemaps from 'gulp-sourcemaps';
-import config from './webpack.config';
+import config from './src/webpack.config';
 
 const tsProj = ts.createProject('./tsconfig.json');
 
