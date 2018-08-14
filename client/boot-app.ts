@@ -1,5 +1,9 @@
 import Vue from 'vue';
+const Vuetify = require('vuetify');
+import 'vuetify/dist/vuetify.min.css';
 import App from './App';
+
+Vue.use(Vuetify);
 
 new Vue({
   el: '#app',
@@ -7,10 +11,10 @@ new Vue({
   template: '<App/>',
 });
 
-if ('serviceWorker' in navigator) {
+if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      const res = await navigator.serviceWorker.register('/service-worker.js');
+      await navigator.serviceWorker.register('/service-worker.js');
     } catch (error) {
       console.log('SW registration failed: ', error);
     }

@@ -1,4 +1,4 @@
-import { Configuration } from 'webpack';
+import { Configuration, EnvironmentPlugin } from 'webpack';
 import * as HtmlPlugin from 'html-webpack-plugin';
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import * as LiveReloadPlugin from 'webpack-livereload-plugin';
@@ -40,6 +40,9 @@ const config: Configuration = {
   },
   devtool: 'source-map',
   plugins: [
+    new EnvironmentPlugin([
+      'NODE_ENV',
+    ]),
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
@@ -61,5 +64,4 @@ const config: Configuration = {
     publicPath: '/',
   }
 }
-
 export default config;
