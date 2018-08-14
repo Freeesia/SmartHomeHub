@@ -54,6 +54,7 @@
     "vue-class-component": "^6.2.0",
     "vue-property-decorator": "^7.0.0",
     "vue-router": "^3.0.1",
+    "vuetify": "^1.1.12",
     "vuex": "^3.0.1",
     "webpack-livereload-plugin": "^2.1.1",
     "webpack-stream": "^5.1.0",
