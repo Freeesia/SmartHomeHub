@@ -6,14 +6,21 @@
     {
       "label": "build",
       "type": "npm",
-      "script": "build",
+      "script": "dev",
       "group": {
         "kind": "build",
         "isDefault": true
       },
       "problemMatcher": [
-        "$gulp-tsc",
+        "$gulp-tsc"
       ]
+    },
+    {
+      "label": "prod",
+      "type": "npm",
+      "script": "start",
+      "isBackground": true,
+      "problemMatcher": []
     }
   ]
 }

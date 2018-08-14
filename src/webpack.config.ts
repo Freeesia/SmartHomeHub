@@ -2,10 +2,14 @@ import { Configuration } from 'webpack';
 import * as HtmlPlugin from 'html-webpack-plugin';
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import * as LiveReloadPlugin from 'webpack-livereload-plugin';
+import { GenerateSW } from 'workbox-webpack-plugin'
 import * as path from 'path';
 
 const src = path.join(__dirname, '..', 'client');
 const dst = path.join(__dirname, '..', 'app', 'public');
+
+const isDev = process.env.NODE_ENV === 'development';
+console.debug(`dev : ${isDev}`);
 
 const config: Configuration = {
   context: src,
@@ -39,9 +43,18 @@ const config: Configuration = {
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
-    new LiveReloadPlugin({ appendScriptTag: true }),
     new HtmlPlugin({ template: path.join(src, 'index.html') }),
-  ],
+  ].concat(
+    isDev ? [
+      new LiveReloadPlugin({ appendScriptTag: true }),
+    ] : [
+        new GenerateSW({
+          importWorkboxFrom: 'local',
+          skipWaiting: true,
+          clientsClaim: true,
+        }),
+      ]
+  ),
   output: {
     filename: '[name].js',
     path: dst,

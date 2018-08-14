@@ -7,6 +7,12 @@ new Vue({
   template: '<App/>',
 });
 
-window.onload = () => {
-  alert('message');
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', async () => {
+    try {
+      const res = await navigator.serviceWorker.register('/service-worker.js');
+    } catch (error) {
+      console.log('SW registration failed: ', error);
+    }
+  });
 }
