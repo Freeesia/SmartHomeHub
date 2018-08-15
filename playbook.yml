@@ -1,25 +1,31 @@
 - hosts: all
   user: root
   tasks:
+    - yum_repository:
+        name: yarn
+        description: Yarn Repository
+        baseurl: https://dl.yarnpkg.com/rpm/
+        gpgcheck: yes
+        gpgkey: https://dl.yarnpkg.com/rpm/pubkey.gpg
+    - yum:
+        name: 'yarn'
     - npm:
-        name: '{{ item }}'
+        name: forever
         global: yes
-      with_items:
-        - typescript
-        - forever
     - copy:
         src: ./{{ item }}
         dest: /work/
       with_items:
-        - app
         - src
+        - client
         - package.json
-        - package-lock.json
+        - yarn.lock
         - tsconfig.json
-    - npm:
+        - gulpfile.ts
+    - yarn:
         path: /work
         state: latest
-    - command: tsc -p .
+    - command: yarn build
       args:
         chdir: /work
     - file:
@@ -30,11 +36,13 @@
         dest: /shh/
       with_items:
         - package.json
-        - package-lock.json
+        - yarn.lock
+        - tsconfig.json
+        - gulpfile.ts
         - config.json
         - ps4-wake.credentials.json
         - forever.json
-    - npm:
+    - yarn:
         path: /shh
         state: latest
         production: yes
@@ -43,22 +51,20 @@
         path: /work
         state: absent
     - firewalld:
-        port: 3000/tcp
+        port: 3000/{{ item }}
         permanent: true
         immediate: true
         state: enabled
-    - firewalld:
-        port: 3000/udp
-        permanent: true
-        immediate: true
-        state: enabled
+      with_items:
+        - tcp
+        - udp
     - cron:
         name: SmartHomeHub
         special_time: reboot
-        job: forever start /shh/forever.json
+        job: NODE_ENV=production forever start /shh/forever.json
     - command: forever list
       register: result
-    - command: forever start /shh/forever.json
+    - command: NODE_ENV=production forever start /shh/forever.json
       when: result.stdout.find('/shh/app/bin/www.js') == -1
       become: ture
       become_user: nobody

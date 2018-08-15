@@ -4,10 +4,21 @@
     "module": "commonjs",
     "removeComments": true,
     "sourceMap": true,
-    "outDir": "app",
-    "rootDir": "src"
+    "experimentalDecorators": true,
+    "baseUrl": ".", // pathsを設定するときはbaseUrlの設定が必要
+    "paths": {
+      "vue": [
+        "/node_modules/vue/types/index"
+      ],
+      "vue-class-component": [
+        "/node_modules/vue-class-component/lib/index"
+      ],
+      "vue-property-decorator": [
+        "/node_modules/vue-property-decorator/lib/vue-property-decorator"
+      ]
+    },
   },
-  "exclude":[
+  "exclude": [
     "node_modules"
   ]
 }

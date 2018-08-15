@@ -5,9 +5,9 @@ npm-debug.log
 .git/*
 bower_components/*
 *.retry
+*.log
 
-app/**/*.js
-app/**/*.js.map
+app/
 
 config.json
 ps4-wake.credentials.json
