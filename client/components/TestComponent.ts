@@ -3,8 +3,10 @@ import Component from "vue-class-component";
 
 @Component({ template: require('./TestComponent.html') })
 export default class TestComponent extends Vue {
-  count = 0;
+  get count() {
+    return this.$store.state.count;
+  }
   inc() {
-    this.count++;
+    this.$store.commit('increment');
   }
 }

@@ -5,6 +5,7 @@ import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import VueRouter from 'vue-router';
 import App from './App';
 import Home from './pages/Home';
+import store from './store';
 
 Vue.use(VueRouter)
 Vue.use(Vuetify);
@@ -18,6 +19,7 @@ const router = new VueRouter({
 
 new Vue({
   router,
+  store,
   el: '#app',
   components: { App },
   template: '<App/>',
