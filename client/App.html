@@ -1,5 +1,16 @@
 <v-app>
-  <v-navigation-drawer :mini-variant="drawer" permanent clipped fixed app></v-navigation-drawer>
+  <v-navigation-drawer :mini-variant="drawer" permanent clipped fixed app>
+    <v-list dense>
+      <v-list-tile v-for="item in menus" :key="item.key" :to="item.key">
+        <v-list-tile-action>
+          <v-icon>{{ item.icon }}</v-icon>
+        </v-list-tile-action>
+        <v-list-tile-content>
+          <v-list-tile-title>{{ item.label }}</v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
+    </v-list>
+  </v-navigation-drawer>
   <v-toolbar dense fixed clipped-left app dark color="primary">
     <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
   </v-toolbar>

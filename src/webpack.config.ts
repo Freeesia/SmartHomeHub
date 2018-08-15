@@ -37,7 +37,7 @@ const config: Configuration = {
         ]
       },
       {
-        test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+        test: /\.(woff2?|eot|ttf|otf|svg)(\?.*)?$/,
         loader: 'file-loader',
         options: {
           name: 'assets/[name].[hash:7].[ext]',
