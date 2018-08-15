@@ -1,6 +1,7 @@
 import Vue from 'vue';
 const Vuetify = require('vuetify');
 import 'vuetify/dist/vuetify.min.css';
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import VueRouter from 'vue-router';
 import App from './App';
 import Home from './pages/Home';

@@ -35,6 +35,13 @@ const config: Configuration = {
           MiniCssExtractPlugin.loader,
           'css-loader',
         ]
+      },
+      {
+        test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+        loader: 'file-loader',
+        options: {
+          name: 'assets/[name].[hash:7].[ext]',
+        }
       }
     ]
   },
