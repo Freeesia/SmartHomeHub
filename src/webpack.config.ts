@@ -17,7 +17,7 @@ const config: Configuration = {
     'bundle': path.join(src, 'boot-app.ts'),
   },
   resolve: {
-    extensions: ['.ts'],
+    extensions: ['.ts', '.js'],
     alias: {
       'vue$': 'vue/dist/vue.esm.js'
     },
