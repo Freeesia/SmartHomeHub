@@ -6,6 +6,7 @@ import * as favicon from 'serve-favicon';
 import * as logger from 'morgan';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
+import * as history from 'connect-history-api-fallback';
 import * as fs from 'fs';
 
 const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
@@ -31,6 +32,7 @@ pc.init(config.pc);
 
 //uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname,'public','favicon.ico')));
+app.use(history());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
