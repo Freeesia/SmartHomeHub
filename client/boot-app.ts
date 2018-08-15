@@ -8,7 +8,12 @@ import Home from './pages/Home';
 import store from './store';
 
 Vue.use(VueRouter)
-Vue.use(Vuetify);
+Vue.use(Vuetify, {
+  theme: {
+    primary: '#604F8E',
+    secondary: '#618573',
+  }
+});
 
 const router = new VueRouter({
   mode: 'history',
