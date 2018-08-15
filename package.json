@@ -41,6 +41,7 @@
     "@types/webpack": "^4.4.9",
     "@types/webpack-dev-middleware": "^2.0.2",
     "@types/webpack-stream": "^3.2.10",
+    "axios": "^0.18.0",
     "cross-env": "^5.2.0",
     "css-loader": "^1.0.0",
     "del": "^3.0.0",

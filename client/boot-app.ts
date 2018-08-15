@@ -6,6 +6,7 @@ import "@mdi/font/css/materialdesignicons.min.css"
 import VueRouter from 'vue-router';
 import App from './App';
 import Home from './pages/Home';
+import PC from './pages/PC';
 import store from './store';
 
 Vue.use(VueRouter)
@@ -20,6 +21,7 @@ const router = new VueRouter({
   mode: 'history',
   routes: [
     { path: '/', component: Home },
+    { path: '/pc', component: PC },
   ]
 });
 
