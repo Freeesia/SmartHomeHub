@@ -2,7 +2,7 @@ import { Configuration, EnvironmentPlugin } from 'webpack';
 import * as HtmlPlugin from 'html-webpack-plugin';
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import * as LiveReloadPlugin from 'webpack-livereload-plugin';
-import { GenerateSW } from 'workbox-webpack-plugin'
+import { GenerateSW } from 'workbox-webpack-plugin';
 import * as path from 'path';
 
 const src = path.join(__dirname, '..', 'client');
@@ -45,7 +45,7 @@ const config: Configuration = {
       }
     ]
   },
-  devtool: 'source-map',
+  devtool: isDev ? 'source-map' : false,
   plugins: [
     new EnvironmentPlugin([
       'NODE_ENV',
