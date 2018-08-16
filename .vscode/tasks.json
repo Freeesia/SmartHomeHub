@@ -21,6 +21,17 @@
       "script": "start",
       "isBackground": true,
       "problemMatcher": []
+    },
+    {
+      "label": "deploy",
+      "type": "shell",
+      "command": "ansible-playbook",
+      "args": [
+        "-i",
+        "deploy/hosts",
+        "playbook.yml"
+      ],
+      "problemMatcher": []
     }
   ]
 }
