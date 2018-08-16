@@ -19,7 +19,7 @@
         "PORT": "3000"
       },
       "sourceMaps": true,
-      "preLaunchTask": "build"
+      "preLaunchTask": "dev:build"
     },
     {
       "name": "Attach",

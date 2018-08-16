@@ -4,7 +4,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "build",
+      "label": "dev:build",
       "type": "npm",
       "script": "dev",
       "group": {
@@ -16,10 +16,20 @@
       ]
     },
     {
-      "label": "prod",
+      "label": "prod:build",
       "type": "npm",
-      "script": "start",
+      "script": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "prod:start",
+      "dependsOn": "prod:build",
+      "type": "shell",
       "isBackground": true,
+      "command": "yarn",
+      "args": [
+        "start"
+      ],
       "problemMatcher": []
     },
     {
