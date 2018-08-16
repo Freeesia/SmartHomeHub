@@ -3,6 +3,7 @@ import * as HtmlPlugin from 'html-webpack-plugin';
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import * as LiveReloadPlugin from 'webpack-livereload-plugin';
 import { GenerateSW } from 'workbox-webpack-plugin';
+import * as ManifestPwaPlugin from 'webpack-pwa-manifest';
 import * as path from 'path';
 
 const src = path.join(__dirname, '..', 'client');
@@ -53,7 +54,26 @@ const config: Configuration = {
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
-    new HtmlPlugin({ template: path.join(src, 'index.html') }),
+    new HtmlPlugin({
+      template: path.join(src, 'index.html'),
+      inject: true
+    }),
+    new ManifestPwaPlugin({
+      name: 'Smart Home Hub',
+      short_name: 'SmartHomeHub',
+      theme_color: '#604f8e',
+      background_color: '#604f8e',
+      orientation: 'natural',
+      display: 'fullscreen',
+      icons: [
+        {
+          src: path.join(src, 'assets/SHH.png'),
+          destination: 'assets',
+          sizes: [96, 128, 192, 256, 384, 512]
+        }
+      ],
+      inject: true,
+    }),
   ].concat(
     isDev ? [
       new LiveReloadPlugin({ appendScriptTag: true }),
