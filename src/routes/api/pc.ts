@@ -21,6 +21,10 @@ router.post('/:pc/on', async (req, res, next) => {
   }
 });
 
+router.get('/', (req, res, next) => {
+  res.json(Object.keys(this.pc));
+});
+
 export function init(config: {}) {
   this.pc = config;
 }

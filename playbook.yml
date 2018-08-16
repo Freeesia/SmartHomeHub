@@ -37,8 +37,6 @@
       with_items:
         - package.json
         - yarn.lock
-        - tsconfig.json
-        - gulpfile.ts
         - config.json
         - ps4-wake.credentials.json
         - forever.json
@@ -64,7 +62,9 @@
         job: NODE_ENV=production forever start /shh/forever.json
     - command: forever list
       register: result
-    - command: NODE_ENV=production forever start /shh/forever.json
+    - command: forever start /shh/forever.json
+      environment:
+        NODE_ENV: production
       when: result.stdout.find('/shh/app/bin/www.js') == -1
       become: ture
       become_user: nobody

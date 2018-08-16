@@ -1,0 +1,21 @@
+<div>
+  <v-data-table :headers="headers" :items="items" hide-actions class="elevation-1">
+    <template slot="items" slot-scope="props">
+      <td>{{ props.item }}</td>
+      <td class="justify-center">
+        <v-btn color="secondary" flat icon @click="powerOn(props.item)">
+          <v-icon>power_settings_new</v-icon>
+        </v-btn>
+      </td>
+    </template>
+    <template slot="no-data">
+      <v-btn color="primary" @click="initialize">Reset</v-btn>
+    </template>
+  </v-data-table>
+  <v-snackbar v-model="snackbar" :color="snackColor">
+    {{ snackText }}
+    <v-btn dark flat @click="snackbar = false">
+      Close
+    </v-btn>
+  </v-snackbar>
+</div>
