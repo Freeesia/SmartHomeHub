@@ -12,18 +12,18 @@ gulp.task('clean', () => {
   return del('app/**/*');
 });
 
-gulp.task('build:client', ['clean'], () => {
+gulp.task('build:client', gulp.series('clean', () => {
   config.mode = <any>process.env.NODE_ENV;
   return WebpackStream(config, Webpack)
     .pipe(gulp.dest('./app/public'));
-});
+}));
 
-gulp.task('build:server', ['clean'], () => {
+gulp.task('build:server', gulp.series('clean', () => {
   return gulp.src('src/**/*.ts')
     .pipe(sourcemaps.init())
     .pipe(tsProj())
     .pipe(sourcemaps.write('.', { sourceRoot: 'src/' }))
     .pipe(gulp.dest('app/'));
-});
+}));
 
-gulp.task('build', ['build:client', 'build:server']);
+gulp.task('build', gulp.parallel('build:client', 'build:server'));
