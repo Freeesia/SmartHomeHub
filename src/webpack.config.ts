@@ -4,6 +4,7 @@ import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import * as LiveReloadPlugin from 'webpack-livereload-plugin';
 import { GenerateSW } from 'workbox-webpack-plugin';
 import * as ManifestPwaPlugin from 'webpack-pwa-manifest';
+import * as CrittersPlugin from 'critters-webpack-plugin';
 import * as path from 'path';
 
 const src = path.join(__dirname, '..', 'client');
@@ -74,6 +75,7 @@ const config: Configuration = {
       ],
       inject: true,
     }),
+    new CrittersPlugin(),
   ].concat(
     isDev ? [
       new LiveReloadPlugin({ appendScriptTag: true }),
