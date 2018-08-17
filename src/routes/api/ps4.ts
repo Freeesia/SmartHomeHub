@@ -4,6 +4,7 @@ import * as express from 'express';
 import * as url from 'url';
 import { Device, Socket } from 'ps4-waker';
 import * as bluebird from 'bluebird';
+import Axios from 'axios';
 
 const router = express.Router();
 const login = bluebird.promisify<any, Device, number>(async (ps4, pinCode, callback) => {
@@ -11,7 +12,43 @@ const login = bluebird.promisify<any, Device, number>(async (ps4, pinCode, callb
   socket.login(pinCode, callback);
 });
 
-let ps4: Device;
+let ps4: Device;// TODO: いらない？
+const appMetaDic = {};
+
+async function getAppMeta(id: string): Promise<object> {
+  if (appMetaDic[id]) {
+    return appMetaDic[id];
+  }
+  const res = await Axios.get(`https://ps4database.io/dataApi?id=${id}_00&env=NP&method=meta`);
+  if (res.data.error) {
+    console.log(res.data);
+    return null;
+  }
+  appMetaDic[id] = res.data;
+  return res.data;
+}
+
+router.get('/', async (req, res, next) => {
+  try {
+    const status = await this.ps4.getDeviceStatus();
+    delete status['type'];
+    delete status['statusLine'];
+    delete status['host-request-port'];
+    delete status['device-discovery-protocol-version'];
+    delete status['system-version'];
+    delete status['address'];
+    delete status['port'];
+    if (status.statusCode == 200 && status['running-app-titleid']) {
+      const meta = await getAppMeta(status['running-app-titleid']);
+      if (meta) {
+        status['running-app-meta'] = meta;
+      }
+    }
+    res.json(status);
+  } catch (error) {
+    next(error);
+  }
+});
 
 router.post('/on', async (req, res, next) => {
   try {
