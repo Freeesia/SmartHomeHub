@@ -19,7 +19,10 @@
         "PORT": "3000"
       },
       "sourceMaps": true,
-      "preLaunchTask": "dev:build"
+      "preLaunchTask": "dev:build",
+      "outFiles": [
+        "${workspaceRoot}/app/**/*.js"
+      ]
     },
     {
       "name": "Attach",

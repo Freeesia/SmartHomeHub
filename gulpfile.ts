@@ -22,7 +22,7 @@ gulp.task('build:server', gulp.series('clean', () => {
   return gulp.src('src/**/*.ts')
     .pipe(sourcemaps.init())
     .pipe(tsProj())
-    .pipe(sourcemaps.write('.', { sourceRoot: 'src/' }))
+    .pipe(sourcemaps.write('.', { sourceRoot: '../src' }))
     .pipe(gulp.dest('app/'));
 }));
 
