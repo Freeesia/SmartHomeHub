@@ -39,6 +39,9 @@ export default class PS4 extends Vue {
   }
 
   async refresh() {
+    if (this.refreshing) {
+      return;
+    }
     this.refreshing = true;
     let res = await Axios.get('/api/ps4');
     this.status = res.data;
@@ -48,6 +51,7 @@ export default class PS4 extends Vue {
   async power() {
     this.powering = true;
     await Axios.post('/api/ps4/' + this.powerTo);
+    await new Promise<any>(res => setTimeout(() => res(), 2000));
     await this.refresh();
     this.powering = false;
   }
