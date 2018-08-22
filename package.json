@@ -5,7 +5,8 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node app/bin/www.js",
     "build": "cross-env NODE_ENV=production gulp build",
-    "dev": "cross-env NODE_ENV=development gulp build"
+    "dev": "cross-env NODE_ENV=development gulp build",
+    "watch": "cross-env NODE_ENV=development gulp watch"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -58,6 +59,7 @@
     "gulp-typescript": "^5.0.0-alpha.3",
     "html-loader": "^0.5.5",
     "material-design-icons-iconfont": "^3.0.3",
+    "nodemon": "^1.18.3",
     "ts-loader": "^4.4.2",
     "ts-node": "^7.0.0",
     "typescript": "^3.0.1",
