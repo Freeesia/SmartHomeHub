@@ -2,6 +2,14 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/client",
+      "sourceMaps": true,
+    },
+    {
       "name": "Launch",
       "type": "node",
       "request": "launch",
@@ -28,13 +36,5 @@
         "${workspaceRoot}/app/**/*.js"
       ]
     },
-    {
-      "name": "Attach",
-      "type": "node",
-      "request": "attach",
-      "port": 9229,
-      "remoteRoot": "/usr/src/app",
-      "localRoot": "${workspaceRoot}"
-    }
   ]
 }
