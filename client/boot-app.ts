@@ -7,6 +7,7 @@ import VueRouter from 'vue-router';
 import App from './App';
 import Home from './pages/Home';
 import PC from './pages/PC';
+import PS4 from './pages/PS4';
 import store from './store';
 
 Vue.use(VueRouter)
@@ -22,6 +23,7 @@ const router = new VueRouter({
   routes: [
     { path: '/', component: Home },
     { path: '/pc', component: PC },
+    { path: '/ps4', component: PS4 },
   ]
 });
 

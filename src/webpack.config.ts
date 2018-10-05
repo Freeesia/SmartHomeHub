@@ -53,7 +53,7 @@ const config: Configuration = {
       'NODE_ENV',
     ]),
     new MiniCssExtractPlugin({
-      filename: '[name].css',
+      filename: '[name].[hash:7].css',
     }),
     new HtmlPlugin({
       template: path.join(src, 'index.html'),
@@ -88,7 +88,7 @@ const config: Configuration = {
       ]
   ),
   output: {
-    filename: '[name].js',
+    filename: '[name].[hash:7].js',
     path: dst,
     publicPath: '/',
   }

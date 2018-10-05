@@ -16,6 +16,32 @@
       ]
     },
     {
+      "label": "watch",
+      "type": "npm",
+      "script": "watch",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "dev:start",
+      "dependsOn": "dev:build",
+      "type": "shell",
+      "command": "nodemon",
+      "args": [
+        "-w",
+        "${workspaceRoot}/app",
+        "-i",
+        "${workspaceRoot}/app/public"
+      ],
+      "options": {
+        "env": {
+          "NODE_ENV": "development",
+          "PORT": "3000"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "prod:build",
       "type": "npm",
       "script": "build",

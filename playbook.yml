@@ -40,10 +40,9 @@
         - config.json
         - ps4-wake.credentials.json
         - forever.json
-    - yarn:
-        path: /shh
-        state: latest
-        production: yes
+    - command: yarn install --prod
+      args:
+        chdir: /shh
     - command: cp -fRT /work/app /shh/app
     - file:
         path: /work
