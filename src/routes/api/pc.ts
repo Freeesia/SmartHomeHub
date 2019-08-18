@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.post('/:pc/on', async (req, res, next) => {
   try {
-    const mac = this.pc[req.params.pc];
+    const mac = this.pc[req.params["pc"]];
     if (!mac) return res.status(403).send("Unknown PC");
     await wolAsync.wakeAsync(mac);
     res.sendStatus(200);
