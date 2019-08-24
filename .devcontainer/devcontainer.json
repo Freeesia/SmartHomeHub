@@ -17,7 +17,6 @@
 	"extensions": [
 		"ms-vscode.vscode-typescript-tslint-plugin",
 		"eamodio.gitlens",
-		"wakatime.vscode-wakatime",
 		"gamunu.vscode-yarn",
 		"visualstudioexptteam.vscodeintellicode",
 		"octref.vetur",
