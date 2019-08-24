@@ -6,6 +6,7 @@ import { GenerateSW } from "workbox-webpack-plugin";
 import * as ManifestPwaPlugin from "webpack-pwa-manifest";
 import * as CrittersPlugin from "critters-webpack-plugin";
 import * as path from "path";
+import * as VuetifyLoaderPlugin from "vuetify-loader/lib/plugin";
 
 const src = path.join(__dirname, "..", "client");
 const dst = path.join(__dirname, "..", "app", "public");
@@ -60,6 +61,7 @@ const config: Configuration = {
   },
   devtool: isDev ? "source-map" : false,
   plugins: [
+    new VuetifyLoaderPlugin(),
     new EnvironmentPlugin(["NODE_ENV"]),
     new MiniCssExtractPlugin({
       filename: "[name].[hash:7].css"

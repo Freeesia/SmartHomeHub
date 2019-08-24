@@ -6,6 +6,9 @@
     "sourceMap": true,
     "experimentalDecorators": true,
     "baseUrl": ".", // pathsを設定するときはbaseUrlの設定が必要
+    "types": [
+      "vuetify"
+    ],
     "paths": {
       "vue": [
         "/node_modules/vue/types/index"
