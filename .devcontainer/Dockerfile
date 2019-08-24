@@ -27,7 +27,7 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends yarn \
     #
     # Install tslint and typescript globally
-    && npm install -g tslint typescript \
+    && npm install -g tslint typescript nodemon \
     #
     # Clean up
     && apt-get autoremove -y \
