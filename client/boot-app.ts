@@ -4,7 +4,7 @@ import App from "./App";
 import Home from "./pages/Home";
 import PC from "./pages/PC";
 import PS4 from "./pages/PS4";
-import store from "./store";
+import store from "../packages/client/src/store";
 import Vuetify, {
   VApp,
   VNavigationDrawer,
