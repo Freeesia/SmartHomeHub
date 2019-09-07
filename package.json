@@ -60,6 +60,7 @@
     "gulp-sourcemaps": "^2.6.4",
     "gulp-typescript": "^5.0.0-alpha.3",
     "html-loader": "^0.5.5",
+    "lerna": "^3.16.4",
     "material-design-icons-iconfont": "^5.0.1",
     "nodemon": "^1.18.4",
     "sass": "^1.22.10",
