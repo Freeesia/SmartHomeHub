@@ -7,14 +7,13 @@
       "name": "Launch Chrome",
       "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}/client",
-      "sourceMaps": true,
+      "sourceMaps": true
     },
     {
       "name": "Launch",
       "type": "node",
       "request": "launch",
       "program": "${workspaceRoot}/app/bin/www.js",
-      "stopOnEntry": false,
       "cwd": "${workspaceRoot}/",
       "runtimeExecutable": "nodemon",
       "runtimeArgs": [
@@ -23,18 +22,18 @@
         "-w",
         "${workspaceRoot}/app",
         "-i",
-        "${workspaceRoot}/app/public",
+        "${workspaceRoot}/app/public"
       ],
       "restart": true,
-      "console": "integratedTerminal",
       "env": {
         "NODE_ENV": "development",
         "PORT": "3000"
       },
+      "smartStep": true,
+      "skipFiles": ["node_modules/**"],
+      "preLaunchTask": "dev:build",
       "sourceMaps": true,
-      "outFiles": [
-        "${workspaceRoot}/app/**/*.js"
-      ]
-    },
+      "outFiles": ["${workspaceRoot}/app/**/*.js"]
+    }
   ]
 }
