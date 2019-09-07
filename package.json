@@ -2,6 +2,9 @@
   "name": "app",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "start": "cross-env NODE_ENV=production node app/bin/www.js",
     "build": "cross-env NODE_ENV=production gulp build",
