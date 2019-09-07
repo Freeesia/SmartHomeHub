@@ -1,12 +1,12 @@
 <div>
   <v-data-table :headers="headers" :items="items" hide-default-footer class="elevation-1">
-    <template slot="item" slot-scope="props">
-      <td>{{ props.item }}</td>
-      <td class="justify-center">
-        <v-btn color="secondary" text icon @click="powerOn(props.item)">
-          <v-icon>power_settings_new</v-icon>
-        </v-btn>
-      </td>
+    <template v-slot:item.name="{ item }">
+      <v-chip dark>{{ item }}</v-chip>
+    </template>
+    <template v-slot:item.action="{ item }">
+      <v-btn color="secondary" text icon @click="powerOn(item)">
+        <v-icon>power_settings_new</v-icon>
+      </v-btn>
     </template>
     <template slot="no-data">
       <v-btn color="primary" @click="initialize">Reset</v-btn>

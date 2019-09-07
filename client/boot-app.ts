@@ -26,7 +26,13 @@ import Vuetify, {
   VLayout,
   VFlex,
   VProgressCircular,
-  VFooter
+  VFooter,
+  VCard,
+  VImg,
+  VCardTitle,
+  VCardText,
+  VCardActions,
+  VTooltip
 } from "vuetify/lib";
 import "vuetify/dist/vuetify.min.css";
 import "@mdi/font/css/materialdesignicons.css";
@@ -54,7 +60,13 @@ Vue.use(Vuetify, {
     VLayout,
     VFlex,
     VProgressCircular,
-    VFooter
+    VFooter,
+    VCard,
+    VImg,
+    VCardTitle,
+    VCardText,
+    VCardActions,
+    VTooltip
   }
 });
 

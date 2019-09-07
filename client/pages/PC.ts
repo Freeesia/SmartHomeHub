@@ -5,8 +5,8 @@ import Axios from 'axios';
 @Component({ template: require('./PC.html') })
 export default class PC extends Vue {
   headers = [
-    { text: 'PC名', value: '' },
-    { text: '操作', value: '', sortable: false },
+    { text: 'PC名', value: 'name' },
+    { text: '操作', value: 'action', sortable: false },
   ]
   items: string[] = [];
   snackbar = false;
