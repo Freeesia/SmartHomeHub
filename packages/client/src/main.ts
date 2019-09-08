@@ -9,6 +9,7 @@ import PC from './pages/PC.vue';
 import PS4 from './pages/PS4.vue';
 
 Vue.config.productionTip = false;
+Vue.use(VueRouter);
 
 const router = new VueRouter({
   mode: "history",
