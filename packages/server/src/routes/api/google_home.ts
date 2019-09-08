@@ -1,10 +1,8 @@
-"use strict";
-
 import GoogleHomeNotifier, {
   GoogleHomeNotifierOptions
 } from "../../modules/google_home_notifier";
-import * as express from "express";
-import * as url from "url";
+import express from "express";
+import url from "url";
 const router = express.Router();
 let notifier: GoogleHomeNotifier;
 

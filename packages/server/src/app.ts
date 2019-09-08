@@ -1,16 +1,14 @@
-'use strict';
-
-import * as express from 'express';
-import * as path from 'path';
-import * as logger from 'morgan';
-import * as cookieParser from 'cookie-parser';
-import * as bodyParser from 'body-parser';
-import * as history from 'connect-history-api-fallback';
-import * as compression from 'compression';
-import * as fs from 'fs';
+import express from 'express';
+import path from 'path';
+import logger from 'morgan';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import history from 'connect-history-api-fallback';
+import compression from 'compression';
+import fs from 'fs';
 
 const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
-const app: express.Express = express();
+const app = express();
 
 import * as googleHome from './routes/api/google_home';
 import * as ps4 from './routes/api/ps4';

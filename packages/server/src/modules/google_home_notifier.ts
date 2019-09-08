@@ -1,14 +1,13 @@
-import { Client as castv2, DefaultMediaReceiver } from 'castv2-client';
-import * as googletts from 'google-tts-api';
-import * as voicetext from 'voicetext';
-import * as crypto from 'crypto';
-import * as url from 'url';
+import { Client as castv2, DefaultMediaReceiver } from "castv2-client";
+import googletts from "google-tts-api";
+import voicetext from "voicetext";
+import crypto from "crypto";
+import url from "url";
 const SPEAKER = voicetext.prototype.SPEAKER;
 const EMOTION = voicetext.prototype.EMOTION;
 const EMOTION_LEVEL = voicetext.prototype.EMOTION_LEVEL;
 
 export default class GoogleHomeNotifier {
-
   private options: GoogleHomeNotifierOptions;
   public dic = {};
 
@@ -33,16 +32,19 @@ export default class GoogleHomeNotifier {
   public async notify(text: string, language: string): Promise<string> {
     const url = await googletts(text, language, 1, 1000);
     return await this.onDeviceUp(this.options.googleHomeUrl, url);
-  };
+  }
 
   public async play(text: string): Promise<string> {
     const buf = await this.speak(text);
-    const md5sum = crypto.createHash('md5')
+    const md5sum = crypto.createHash("md5");
     md5sum.update(buf);
-    const md5 = md5sum.digest('hex');
+    const md5 = md5sum.digest("hex");
     this.dic[md5] = buf;
-    return await this.onDeviceUp(this.options.googleHomeUrl, url.resolve(this.options.baseUrl, md5));
-  };
+    return await this.onDeviceUp(
+      this.options.googleHomeUrl,
+      url.resolve(this.options.baseUrl, md5)
+    );
+  }
 
   public pop(md5: string): Buffer {
     const buf = this.dic[md5];
@@ -57,16 +59,16 @@ export default class GoogleHomeNotifier {
         client.launch(DefaultMediaReceiver, (err, player) => {
           var media = {
             contentId: url,
-            contentType: 'audio/mp3',
-            streamType: 'BUFFERED' // or LIVE
+            contentType: "audio/mp3",
+            streamType: "BUFFERED" // or LIVE
           };
           player.load(media, { autoplay: true }, (err, status) => {
             client.close();
-            resolve('Device notified');
+            resolve("Device notified");
           });
         });
       });
-      (<any>client).on('error', (err) => {
+      (<any>client).on("error", err => {
         client.close();
         reject(err);
       });

@@ -1,13 +1,10 @@
-"use strict";
-
 import * as express from "express";
-import * as url from "url";
 import { Device, Socket } from "ps4-waker";
-import * as bluebird from "bluebird";
 import Axios from "axios";
+import util from "util";
 
 const router = express.Router();
-const login = bluebird.promisify<any, Device, number>(
+const login = util.promisify<any, Device, string>(
   async (ps4, pinCode, callback) => {
     const socket = <Socket>await ps4.openSocket();
     socket.login(pinCode, callback);
