@@ -16,9 +16,9 @@ const CountModule = namespace("CountState");
 @Component({})
 export default class TestComponent extends Vue {
   @CountModule.State
-  count: number;
+  count!: number;
   @CountModule.Action
-  incAsync: () => Promise<any>;
+  incAsync!: () => Promise<any>;
   isBusy = false;
 
   async inc() {
