@@ -10,6 +10,10 @@
   "bugs": {
     "url": "https://github.com/Freeesia/SmartHomeHub/issues"
   },
+  "scripts": {
+    "serve": "nodemon",
+    "build": "tsc -p ."
+  },
   "devDependencies": {
     "@types/bluebird": "^3.5.27",
     "@types/compression": "^1.0.1",
@@ -17,6 +21,7 @@
     "@types/cookie-parser": "^1.4.2",
     "@types/express": "^4.17.1",
     "@types/morgan": "^1.7.37",
+    "nodemon": "^1.19.2",
     "ts-node": "^8.3.0",
     "typescript": "^3.6.2"
   },
