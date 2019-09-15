@@ -1,0 +1,5 @@
+GET http://localhost:3000/api/pc/
+
+###
+
+GET http://localhost:3000/api/ps4/
