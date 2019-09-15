@@ -1,36 +1,39 @@
-import * as express from "express";
 import { Device, Socket } from "ps4-waker";
+import ConfigService from "../../modules/configService";
+import {
+  Get,
+  JsonController,
+  Post,
+  Param,
+  NotFoundError
+} from "routing-controllers";
 import Axios from "axios";
-import util from "util";
 
-const router = express.Router();
-const login = util.promisify<any, Device, string>(
-  async (ps4, pinCode, callback) => {
-    const socket = <Socket>await ps4.openSocket();
-    socket.login(pinCode, callback);
+@JsonController("/ps4")
+export default class Ps4Controller {
+  private readonly ps4: Device;
+  private readonly appMeta: { [id: string]: string } = {};
+
+  constructor(configService: ConfigService) {
+    this.ps4 = new Device(configService.get<any>("ps4"));
   }
-);
 
-let ps4: Device; // TODO: いらない？
-const appMetaDic = {};
-
-async function getAppMeta(id: string): Promise<object> {
-  if (appMetaDic[id]) {
-    return appMetaDic[id];
+  async getAppMeta(id: string): Promise<any> {
+    if (this.appMeta[id]) {
+      return this.appMeta[id];
+    }
+    const res = await Axios.get(
+      `https://ps4database.io/dataApi?id=${id}_00&env=NP&method=meta`
+    );
+    if (res.data.error) {
+      return null;
+    }
+    this.appMeta[id] = res.data;
+    return res.data;
   }
-  const res = await Axios.get(
-    `https://ps4database.io/dataApi?id=${id}_00&env=NP&method=meta`
-  );
-  if (res.data.error) {
-    console.log(res.data);
-    return null;
-  }
-  appMetaDic[id] = res.data;
-  return res.data;
-}
 
-router.get("/", async (req, res, next) => {
-  try {
+  @Get("/")
+  async getStatus(): Promise<any> {
     const status = await this.ps4.getDeviceStatus();
     delete status["type"];
     delete status["statusLine"];
@@ -40,87 +43,57 @@ router.get("/", async (req, res, next) => {
     delete status["address"];
     delete status["port"];
     if (status.statusCode == 200 && status["running-app-titleid"]) {
-      const meta = await getAppMeta(status["running-app-titleid"]);
+      const meta = await this.getAppMeta(status["running-app-titleid"]);
       if (meta) {
         status["running-app-meta"] = meta;
       }
     }
-    res.json(status);
-  } catch (error) {
-    next(error);
+    return status;
   }
-});
 
-router.post("/on", async (req, res, next) => {
-  try {
+  @Post("/on")
+  async On(): Promise<void> {
     await this.ps4.turnOn();
-    res.sendStatus(200);
-  } catch (error) {
-    next(error);
   }
-});
 
-router.post("/off", async (req, res, next) => {
-  try {
+  @Post("/off")
+  async Off(): Promise<void> {
     await this.ps4.turnOff();
-    res.sendStatus(200);
-  } catch (error) {
-    next(error);
   }
-});
 
-router.post("/key/:key", async (req, res, next) => {
-  try {
+  @Post("/key/:key")
+  async SendKey(@Param("key") key: string): Promise<void> {
     if (!this.ps4.isConnected) {
       await this.ps4.turnOn();
     }
-    await this.ps4.sendKeys([req.params["key"]]);
-    res.sendStatus(200);
-  } catch (error) {
-    next(error);
+    await this.ps4.sendKeys([key]);
   }
-});
 
-router.post("/:title", async (req, res, next) => {
-  try {
+  @Post("/:title")
+  async Launch(@Param("title") title: string): Promise<void> {
     if (!this.ps4.isConnected) {
       await this.ps4.turnOn();
     }
-    switch (req.params["title"]) {
+    switch (title) {
       case "youtube":
         await this.ps4.startTitle("CUSA01065");
         break;
-
       default:
-        res.status(403).send("Unknown Title");
-        return;
+        throw new NotFoundError();
     }
-    res.sendStatus(200);
-  } catch (error) {
-    next(error);
   }
-});
 
-router.post("/login/:pin", async (req, res, next) => {
-  try {
-    await login(this.ps4, req.params["pin"]);
-    res.sendStatus(200);
-  } catch (error) {
-    next(error);
+  @Post("/login/:pin")
+  async Login(@Param("pin") pin: string): Promise<void> {
+    const socket = <Socket>await this.ps4.openSocket();
+    return new Promise<void>((res, rej) => {
+      socket.login(pin, err => {
+        if (err) {
+          rej(err);
+        } else {
+          res();
+        }
+      });
+    });
   }
-});
-
-router.use((err, req, res, next) => {
-  if (!err) return next();
-  if (err.status) {
-    err.ps4Status = err.status;
-    delete err.status;
-  }
-  next(err);
-});
-
-export function init(config: any) {
-  this.ps4 = new Device(config);
 }
-
-export default router;
