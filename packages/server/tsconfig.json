@@ -7,6 +7,8 @@
     // TODO : ↓有効にしたほうが良い
     // "noImplicitAny": true,
     "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "sourceMap": true,
     "outDir": "../../dist",
     "baseUrl": ".",

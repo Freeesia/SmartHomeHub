@@ -1,30 +1,31 @@
-import express from "express";
-import bluebird from "bluebird";
+import "reflect-metadata";
+import { JsonController, Param, Get, Post, NotFoundError } from "routing-controllers";
 import wol from "wol";
-
+import bluebird from "bluebird";
+import ConfigService from "../../modules/configService";
 const wolAsync = bluebird.promisifyAll(wol);
 
-let pc: {};
+@JsonController("/pc")
+export default class PcController {
+  private config: PcConfig;
 
-const router = express.Router();
-
-router.post("/:pc/on", async (req, res, next) => {
-  try {
-    const mac = this.pc[req.params["pc"]];
-    if (!mac) return res.status(403).send("Unknown PC");
-    await wolAsync.wakeAsync(mac);
-    res.sendStatus(200);
-  } catch (error) {
-    next(error);
+  constructor(configService: ConfigService) {
+    this.config = configService.get<PcConfig>("pc");
   }
-});
 
-router.get("/", (req, res, next) => {
-  res.json(Object.keys(this.pc));
-});
+  @Get("/")
+  getAll() {
+    return Object.keys(this.config);
+  }
 
-export function init(config: {}) {
-  this.pc = config;
+  @Post("/:pc/on")
+  async onPC(@Param("pc") pc: string) {
+    const mac = this.config[pc];
+    if (!mac) throw new NotFoundError("Unknown PC");
+    await wolAsync.wakeAsync(mac);
+  }
 }
 
-export default router;
+export interface PcConfig {
+  [name: string]: string;
+}
