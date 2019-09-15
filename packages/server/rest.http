@@ -3,3 +3,29 @@ GET http://localhost:3000/api/pc/
 ###
 
 GET http://localhost:3000/api/ps4/
+
+###
+
+POST http://localhost:3000/api/googlehome/
+Content-Type: application/json
+
+{
+  "text": "おはよう"
+}
+
+###
+POST http://localhost:3000/api/googlehome/twitter
+Content-Type: application/json
+
+{
+  "user": "テスト",
+  "text": "おはよう"
+}
+
+###
+POST http://localhost:3000/api/googlehome/notify
+Content-Type: application/json
+
+{
+  "text": "おはよう"
+}

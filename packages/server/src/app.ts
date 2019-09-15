@@ -10,6 +10,7 @@ import compression from "compression";
 import fs from "fs";
 import { Container } from "typedi";
 import PcController from "./routes/api/pc";
+import GoogleHomeController from "./routes/api/googleHome";
 import ConfigService from "./modules/configService";
 
 const config = JSON.parse(fs.readFileSync("config.json", "utf8"));
@@ -18,12 +19,10 @@ useContainer(Container);
 const app = express();
 useExpressServer(app, {
   routePrefix: "/api",
-  controllers: [PcController]
+  controllers: [PcController, GoogleHomeController]
 });
 
-import * as googleHome from "./routes/api/google_home";
 import * as ps4 from "./routes/api/ps4";
-googleHome.init(config.googlehome);
 ps4.init(config.ps4);
 
 //uncomment after placing your favicon in /public
@@ -36,7 +35,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/api/googlehome", googleHome.default);
 app.use("/api/ps4", ps4.default);
 
 export default app;
