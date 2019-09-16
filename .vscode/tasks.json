@@ -20,6 +20,7 @@
     {
       "label": "serve",
       "dependsOn": ["server:serve", "client:serve"],
+      "isBackground": true,
       "problemMatcher": []
     },
     {
