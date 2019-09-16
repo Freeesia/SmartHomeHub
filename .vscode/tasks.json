@@ -24,6 +24,15 @@
       "problemMatcher": []
     },
     {
+      "label": "build",
+      "command": "lerna",
+      "args": ["run", "build"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
       "label": "deploy",
       "type": "shell",
       "command": "ansible-playbook",
