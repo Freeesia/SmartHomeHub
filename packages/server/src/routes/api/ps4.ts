@@ -5,7 +5,8 @@ import {
   JsonController,
   Post,
   Param,
-  NotFoundError
+  NotFoundError,
+  OnUndefined
 } from "routing-controllers";
 import Axios from "axios";
 
@@ -52,16 +53,19 @@ export default class Ps4Controller {
   }
 
   @Post("/on")
+  @OnUndefined(200)
   async On(): Promise<void> {
     await this.ps4.turnOn();
   }
 
   @Post("/off")
+  @OnUndefined(200)
   async Off(): Promise<void> {
     await this.ps4.turnOff();
   }
 
   @Post("/key/:key")
+  @OnUndefined(200)
   async SendKey(@Param("key") key: string): Promise<void> {
     if (!this.ps4.isConnected) {
       await this.ps4.turnOn();
@@ -70,6 +74,7 @@ export default class Ps4Controller {
   }
 
   @Post("/:title")
+  @OnUndefined(200)
   async Launch(@Param("title") title: string): Promise<void> {
     if (!this.ps4.isConnected) {
       await this.ps4.turnOn();
@@ -84,6 +89,7 @@ export default class Ps4Controller {
   }
 
   @Post("/login/:pin")
+  @OnUndefined(200)
   async Login(@Param("pin") pin: string): Promise<void> {
     const socket = <Socket>await this.ps4.openSocket();
     return new Promise<void>((res, rej) => {
