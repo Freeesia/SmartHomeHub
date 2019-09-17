@@ -1,6 +1,8 @@
 - hosts: all
   user: root
   tasks:
+    - name: Install Node Repo
+      shell: curl --silent --location https://rpm.nodesource.com/setup_10.x | bash -
     - yum_repository:
         name: yarn
         description: Yarn Repository
@@ -10,40 +12,42 @@
     - yum:
         name: 'yarn'
     - npm:
-        name: forever
+        name: "{{ item }}"
         global: yes
+      with_items:
+        - forever
+        - lerna
     - copy:
         src: ./{{ item }}
         dest: /work/
       with_items:
-        - src
-        - client
+        - packages
+        - lerna.json
         - package.json
+        - postcss.config.js
         - yarn.lock
-        - tsconfig.json
-        - gulpfile.ts
     - yarn:
         path: /work
-        state: latest
-    - command: yarn build
+    - command: lerna run build
       args:
         chdir: /work
     - file:
-        path: /shh
+        path: /shh/app
         state: directory
     - copy:
-        src: ./{{ item }}
+        remote_src: yes
+        src: /work/dist/
+        dest: /shh/app/
+    - copy:
+        src: "{{ item }}"
         dest: /shh/
       with_items:
-        - package.json
-        - yarn.lock
-        - config.json
-        - ps4-wake.credentials.json
         - forever.json
-    - command: yarn install --prod
-      args:
-        chdir: /shh
-    - command: cp -fRT /work/app /shh/app
+        - packages/server/
+        - yarn.lock
+    - yarn:
+        path: /shh
+        production: yes
     - file:
         path: /work
         state: absent
