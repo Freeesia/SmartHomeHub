@@ -43,5 +43,9 @@ export default class App extends Vue {
     { key: 'ps4', label: 'PS4', icon: 'mdi-playstation' },
     { key: 'remo', label: 'Nature Remo', icon: 'settings_remote' },
   ]
+
+  created() {
+    this.drawer = this.$vuetify.breakpoint.mdAndUp;
+  }
 }
 </script>
