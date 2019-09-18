@@ -3,6 +3,8 @@
   tasks:
     - name: Install Node Repo
       shell: curl --silent --location https://rpm.nodesource.com/setup_10.x | bash -
+      args:
+        warn: no
     - yum_repository:
         name: yarn
         description: Yarn Repository
@@ -43,7 +45,9 @@
         dest: /shh/
       with_items:
         - forever.json
-        - packages/server/
+        - packages/server/package.json
+        - packages/server/config.json
+        - packages/server/ps4-wake.credentials.json
         - yarn.lock
     - yarn:
         path: /shh
