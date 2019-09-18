@@ -2,7 +2,7 @@
   <div>
     <v-data-table :headers="headers" :items="items" hide-default-footer class="elevation-1">
       <template v-slot:item.name="{ item }">
-        <v-chip dark>{{ item }}</v-chip>
+        {{ item }}
       </template>
       <template v-slot:item.action="{ item }">
         <v-btn color="secondary" text icon @click="powerOn(item)">
@@ -28,7 +28,7 @@ import Axios from "axios";
 @Component({})
 export default class PC extends Vue {
   headers = [
-    { text: "PC名", value: "name" },
+    { text: "PC名", value: "name", sortable: false },
     { text: "操作", value: "action", sortable: false }
   ];
   items: string[] = [];
