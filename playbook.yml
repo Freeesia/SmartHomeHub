@@ -12,7 +12,10 @@
         gpgcheck: yes
         gpgkey: https://dl.yarnpkg.com/rpm/pubkey.gpg
     - yum:
-        name: 'yarn'
+        name:
+          - nodejs
+          - yarn
+        state: latest
     - npm:
         name: "{{ item }}"
         global: yes
