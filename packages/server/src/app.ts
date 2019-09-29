@@ -3,7 +3,8 @@ import {
   useExpressServer,
   useContainer,
   Action,
-  UnauthorizedError
+  UnauthorizedError,
+  NotFoundError
 } from "routing-controllers";
 import express from "express";
 import path from "path";
@@ -21,6 +22,7 @@ import Ps4Controller from "./routes/api/ps4";
 import passport from "passport";
 import LdapStrategy from "passport-ldapauth";
 import UserController from "./routes/api/user";
+import session from "express-session";
 
 const config = JSON.parse(fs.readFileSync("config.json", "utf8"));
 Container.set(ConfigService, new ConfigService(config));
@@ -29,6 +31,14 @@ const app = express();
 
 //uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname,'public','favicon.ico')));
+app.use(
+  session({
+    secret: config.sessionSecret,
+    rolling: true,
+    resave: false,
+    saveUninitialized: false
+  })
+);
 app.use(compression());
 app.use(history());
 app.use(logger("dev"));
@@ -66,5 +76,17 @@ passport.use(
     server: config.ldap
   })
 );
+
+const users: { [uid: string]: any } = {};
+
+passport.serializeUser((user: any, done: (err: any, id?: any) => void) => {
+  users[user.uid] = user;
+  done(null, user.uid);
+});
+
+passport.deserializeUser((id: any, done: (err: any, user?: any) => void) => {
+  const user = users[id];
+  done(user ? null : new NotFoundError(id), user);
+});
 
 export default app;
