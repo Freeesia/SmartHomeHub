@@ -6,11 +6,13 @@ import {
   Post,
   Param,
   NotFoundError,
-  OnUndefined
+  OnUndefined,
+  Authorized
 } from "routing-controllers";
 import Axios from "axios";
 
 @JsonController("/ps4")
+@Authorized()
 export default class Ps4Controller {
   private readonly ps4: Device;
   private readonly appMeta: { [id: string]: string } = {};

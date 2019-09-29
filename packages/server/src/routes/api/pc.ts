@@ -1,11 +1,12 @@
 import "reflect-metadata";
-import { JsonController, Param, Get, Post, NotFoundError, OnUndefined } from "routing-controllers";
+import { JsonController, Param, Get, Post, NotFoundError, OnUndefined, Authorized } from "routing-controllers";
 import wol from "wol";
 import bluebird from "bluebird";
 import ConfigService from "../../modules/configService";
 const wolAsync = bluebird.promisifyAll(wol);
 
 @JsonController("/pc")
+@Authorized()
 export default class PcController {
   private config: PcConfig;
 

@@ -1,4 +1,5 @@
 GET http://localhost:3000/api/pc/
+Authorization: Bearer {{jwt}}
 
 ###
 GET http://localhost:3000/api/ps4/

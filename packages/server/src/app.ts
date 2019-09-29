@@ -3,7 +3,6 @@ import {
   useExpressServer,
   useContainer,
   Action,
-  UnauthorizedError,
   NotFoundError
 } from "routing-controllers";
 import express from "express";
@@ -21,6 +20,11 @@ import GoogleHomeController from "./routes/api/googleHome";
 import Ps4Controller from "./routes/api/ps4";
 import passport from "passport";
 import LdapStrategy from "passport-ldapauth";
+import {
+  Strategy as JwtStrategy,
+  StrategyOptions as JwtOptions,
+  ExtractJwt
+} from "passport-jwt";
 import UserController from "./routes/api/user";
 import session from "express-session";
 
@@ -58,10 +62,13 @@ useExpressServer(app, {
     UserController
   ],
   authorizationChecker: (action: Action) =>
-    new Promise<boolean>((resolve, reject) => {
-      passport.authenticate("ldapauth", (err, user, info) => {
+    new Promise<boolean>((resolve) => {
+      if (action.request.user) {
+        return resolve(true);
+      }
+      passport.authenticate("jwt", { session: false }, (err, user) => {
         if (err || !user) {
-          return reject(new UnauthorizedError(info));
+          return resolve(false);
         } else {
           action.request.user = user;
           return resolve(true);
@@ -75,6 +82,23 @@ passport.use(
   new LdapStrategy({
     server: config.ldap
   })
+);
+
+let jwtConfig = <JwtOptions>config.jwt;
+jwtConfig.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+
+passport.use(
+  new JwtStrategy(
+    jwtConfig,
+    (payload: any, done: (error: any, user?: any, info?: any) => void) => {
+      delete payload.iat;
+      delete payload.nbf;
+      delete payload.exp;
+      delete payload.aud;
+      delete payload.iss;
+      done(null, payload);
+    }
+  )
 );
 
 const users: { [uid: string]: any } = {};

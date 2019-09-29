@@ -9,7 +9,8 @@ import {
   BodyParam,
   JsonController,
   Param,
-  Get
+  Get,
+  Authorized
 } from "routing-controllers";
 
 @JsonController("/googlehome")
@@ -23,11 +24,13 @@ export default class GoogleHomeController {
   }
 
   @Post("/")
+  @Authorized()
   Play(@BodyParam("text") text: string) {
     return this.notifier.play(text);
   }
 
   @Post("/twitter")
+  @Authorized()
   ToTwitter(@BodyParam("user") user: string, @BodyParam("text") text: string) {
     if (user === "FreesiaDevelop") {
       return;
@@ -42,6 +45,7 @@ export default class GoogleHomeController {
   }
 
   @Post("/notify")
+  @Authorized()
   Notify(@BodyParam("text") text: string) {
     return this.notifier.notify(text, "ja");
   }
