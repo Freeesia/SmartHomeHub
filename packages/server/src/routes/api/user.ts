@@ -4,7 +4,8 @@ import {
   UseBefore,
   CurrentUser,
   Get,
-  Authorized
+  Authorized,
+  OnUndefined
 } from "routing-controllers";
 import passport from "passport";
 import jwt, { SignOptions } from "jsonwebtoken";
@@ -37,5 +38,11 @@ export default class UserController {
   @Authorized()
   getJwt(@CurrentUser({ required: true }) user: any) {
     return jwt.sign(user, this.secretKey, this.config);
+  }
+
+  @Get("/")
+  @OnUndefined(200)
+  me(@CurrentUser() user:any) {
+    return user;
   }
 }
