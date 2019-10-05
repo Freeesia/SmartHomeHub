@@ -7,6 +7,7 @@ import vuetify from './plugins/vuetify';
 import Home from './pages/Home.vue';
 import PC from './pages/PC.vue';
 import PS4 from './pages/PS4.vue';
+import Login from './pages/Login.vue';
 
 Vue.config.productionTip = false;
 Vue.use(VueRouter);
@@ -16,7 +17,8 @@ const router = new VueRouter({
   routes: [
     { path: "/", component: Home },
     { path: "/pc", component: PC },
-    { path: "/ps4", component: PS4 }
+    { path: "/ps4", component: PS4 },
+    { path: "/login", component: Login }
   ]
 });
 
