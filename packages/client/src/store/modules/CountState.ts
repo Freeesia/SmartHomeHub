@@ -1,8 +1,9 @@
-import { VuexModule, Mutation, Action, Module, getModule } from "vuex-module-decorators";
-import store from "@/store";
+import { VuexModule, Mutation, Action, Module } from "vuex-module-decorators";
 
-@Module({ dynamic: true, store, name: "CountState"})
-class CountState extends VuexModule {
+// TODO : 動的モジュールにしたいけど、localStorageに保存できなくなる
+// https://github.com/championswimmer/vuex-module-decorators/pull/102
+@Module({ namespaced: true, name: "CountState" })
+export default class CountState extends VuexModule {
   count: number = 0;
 
   @Mutation
@@ -20,5 +21,3 @@ class CountState extends VuexModule {
     })
   }
 }
-
-export const CountModule = getModule(CountState);

@@ -39,7 +39,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import Axios from "axios";
-import { UserModule } from "@/store/modules/UserState";
+import { UserModule } from "@/store";
 
 @Component({})
 export default class App extends Vue {
@@ -50,11 +50,13 @@ export default class App extends Vue {
     { key: "ps4", label: "PS4", icon: "mdi-playstation" },
     { key: "remo", label: "Nature Remo", icon: "settings_remote" }
   ];
-  user: any = null;
+  
+  public get user(): any {
+    return UserModule.user;
+  }
 
   async created() {
     this.drawer = this.$vuetify.breakpoint.mdAndUp;
-    this.user = UserModule.user;
   }
 }
 </script>

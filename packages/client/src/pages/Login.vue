@@ -25,7 +25,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import Axios from "axios";
-import { UserModule } from "@/store/modules/UserState";
+import { UserModule } from "@/store";
 
 @Component({})
 export default class Login extends Vue {
@@ -35,6 +35,7 @@ export default class Login extends Vue {
   public password = "";
   public passwordRules = [(v?: string) => !!v || "Password is required"];
   public submitting = false;
+
   public async submit() {
     const form = <HTMLFormElement>this.$refs.form;
     if (!form.validate()) {
@@ -42,16 +43,17 @@ export default class Login extends Vue {
     }
     this.submitting = true;
     try {
-      const res = await Axios.post<string>("/api/user/login", {
+      await UserModule.login({
         username: this.name,
         password: this.password
       });
-      console.log(res.data);
-    } catch (error) {
-      console.error(error);
+      this.$router.push("/");
+    } catch(error) {
+      console.log(error);
     }
     this.submitting = false;
   }
+
   public clear() {
     (this.$refs.form as HTMLFormElement).reset();
   }

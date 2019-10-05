@@ -9,7 +9,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { CountModule } from "../store/modules/CountState";
+import { CountModule } from "@/store";
 
 @Component({})
 export default class TestComponent extends Vue {
