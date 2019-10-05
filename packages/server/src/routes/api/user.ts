@@ -5,12 +5,14 @@ import {
   CurrentUser,
   Get,
   Authorized,
-  OnUndefined
+  OnUndefined,
+  Req
 } from "routing-controllers";
 import passport from "passport";
 import jwt, { SignOptions } from "jsonwebtoken";
 import ConfigService from "../../modules/configService";
 import { StrategyOptions as JwtOptions } from "passport-jwt";
+import { Request } from "express";
 
 @JsonController("/user")
 export default class UserController {
@@ -30,19 +32,24 @@ export default class UserController {
 
   @Post("/login")
   @UseBefore(passport.authenticate("ldapauth"))
-  login(@CurrentUser({ required: true }) user: any) {
+  login(@CurrentUser({ required: true }) user: any): string {
     return jwt.sign(user, this.secretKey, this.config);
+  }
+
+  @Post("/logout")
+  logout(@Req() req: Request) {
+    req.logout();
   }
 
   @Get("/jwt")
   @Authorized()
-  getJwt(@CurrentUser({ required: true }) user: any) {
+  getJwt(@CurrentUser({ required: true }) user: any): string {
     return jwt.sign(user, this.secretKey, this.config);
   }
 
   @Get("/")
   @OnUndefined(200)
-  me(@CurrentUser() user:any) {
+  me(@CurrentUser() user: any): any {
     return user;
   }
 }
