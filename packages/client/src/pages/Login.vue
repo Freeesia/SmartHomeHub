@@ -25,6 +25,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import Axios from "axios";
+import { UserModule } from "@/store/modules/UserState";
 
 @Component({})
 export default class Login extends Vue {

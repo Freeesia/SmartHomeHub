@@ -39,6 +39,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import Axios from "axios";
+import { UserModule } from "@/store/modules/UserState";
 
 @Component({})
 export default class App extends Vue {
@@ -53,8 +54,7 @@ export default class App extends Vue {
 
   async created() {
     this.drawer = this.$vuetify.breakpoint.mdAndUp;
-    const res = await Axios.get("/api/user");
-    this.user = res.data;
+    this.user = UserModule.user;
   }
 }
 </script>
