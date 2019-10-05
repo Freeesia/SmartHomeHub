@@ -22,9 +22,18 @@
       ></v-app-bar-nav-icon>
       <v-toolbar-title>Smart Home Hub</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-toolbar-items>
-        <v-btn text v-if="user">{{ user.sn }}</v-btn>
-      </v-toolbar-items>
+      <v-menu offset-y>
+        <template v-slot:activator="{ on }">
+          <v-toolbar-items>
+            <v-btn text v-on="on" v-if="user">{{ user.sn }}</v-btn>
+          </v-toolbar-items>
+        </template>
+        <v-list>
+          <v-list-item @click="logout">
+            <v-list-item-title>Logout</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-app-bar>
     <v-content>
       <v-container fluid>
@@ -50,9 +59,14 @@ export default class App extends Vue {
     { key: "ps4", label: "PS4", icon: "mdi-playstation" },
     { key: "remo", label: "Nature Remo", icon: "settings_remote" }
   ];
-  
+
   public get user(): any {
     return UserModule.user;
+  }
+
+  public async logout() {
+    await UserModule.logout();
+    this.$router.push("/login");
   }
 
   async created() {
