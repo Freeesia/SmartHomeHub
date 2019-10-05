@@ -1,40 +1,24 @@
-import Vuex, { Module } from 'vuex';
-import { DefineGetters, DefineMutations, DefineActions, Dispatcher, Committer } from 'vuex-type-helper';
+import { VuexModule, Mutation, Action, Module, getModule } from "vuex-module-decorators";
+import store from "@/store";
 
-export class CountState {
+@Module({ dynamic: true, store, name: "CountState"})
+class CountState extends VuexModule {
   count: number = 0;
-}
 
-export interface CountMutations {
-  inc: any;
-}
-
-export interface CountActions {
-  incAsync: any;
-}
-
-const mutations: DefineMutations<CountMutations, CountState> = {
-  inc(state) {
-    state.count++;
+  @Mutation
+  public inc() {
+    this.count++;
   }
-}
 
-const actions: DefineActions<CountActions, CountState, CountMutations> = {
-  incAsync({ commit }) {
+  @Action
+  public incAsync() {
     return new Promise<any>(res => {
       setTimeout(() => {
-        commit('inc');
+        this.inc();
         res();
       }, 1000);
-    });
+    })
   }
 }
 
-const store: Module<CountState, any> = {
-  namespaced: true,
-  state: new CountState(),
-  mutations,
-  actions,
-}
-
-export default store;
+export const CountModule = getModule(CountState);
