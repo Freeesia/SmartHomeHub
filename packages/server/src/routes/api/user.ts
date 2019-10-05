@@ -37,6 +37,7 @@ export default class UserController {
   }
 
   @Post("/logout")
+  @OnUndefined(200)
   logout(@Req() req: Request) {
     req.logout();
   }

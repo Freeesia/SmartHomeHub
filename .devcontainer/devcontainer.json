@@ -26,6 +26,7 @@
     "prograhammer.tslint-vue",
     "esbenp.prettier-vscode",
     "christian-kohler.path-intellisense",
-    "mutantdino.resourcemonitor"
+    "mutantdino.resourcemonitor",
+    "humao.rest-client"
   ]
 }

@@ -44,6 +44,9 @@ Content-Type: application/x-www-form-urlencoded
 
 username={{name}}
 &password={{pass}}
-
+###
+POST http://localhost:3000/api/user/logout
+###
+GET http://localhost:3000/api/user/jwt
 ###
 GET http://localhost:3000/api/user/
