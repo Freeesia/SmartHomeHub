@@ -86,7 +86,10 @@ passport.use(
 );
 
 let jwtConfig = <JwtOptions>config.jwt;
-jwtConfig.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+jwtConfig.jwtFromRequest = ExtractJwt.fromExtractors([
+  ExtractJwt.fromAuthHeaderAsBearerToken(),
+  ExtractJwt.fromUrlQueryParameter("token"),
+]);
 
 passport.use(
   new JwtStrategy(
