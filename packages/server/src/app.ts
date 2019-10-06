@@ -37,6 +37,7 @@ const app = express();
 //app.use(favicon(path.join(__dirname,'public','favicon.ico')));
 app.use(
   session({
+    cookie: { maxAge: 1000 * 60 * 60 * 24 * 365 },
     secret: config.sessionSecret,
     rolling: true,
     resave: false,

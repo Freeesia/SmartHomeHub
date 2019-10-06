@@ -71,6 +71,10 @@ export default class App extends Vue {
 
   async created() {
     this.drawer = this.$vuetify.breakpoint.mdAndUp;
+    await UserModule.loginToken();
+    if (!this.user && this.$router.currentRoute.path !== "/login") {
+      this.$router.push("/login");
+    }
   }
 }
 </script>

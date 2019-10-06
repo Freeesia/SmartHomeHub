@@ -15,6 +15,23 @@ export default class UserState extends VuexModule {
   }
 
   @Action
+  public async loginToken() {
+    if (!this.token) {
+      return;
+    }
+    try {
+      const res = await Axios.post<string>("/api/user/login", null, {
+        headers: {
+          Authorization: `Bearer ${this.token}`
+        }
+      });
+      this.context.commit("setToken", res.data);
+    } catch (error) {
+      this.context.commit("setToken", null);
+    }
+  }
+
+  @Action
   public async logout() {
     await Axios.post("/api/user/logout");
     this.context.commit("setToken", null);
