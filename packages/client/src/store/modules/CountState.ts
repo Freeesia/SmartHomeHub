@@ -1,40 +1,23 @@
-import Vuex, { Module } from 'vuex';
-import { DefineGetters, DefineMutations, DefineActions, Dispatcher, Committer } from 'vuex-type-helper';
+import { VuexModule, Mutation, Action, Module } from "vuex-module-decorators";
 
-export class CountState {
+// TODO : 動的モジュールにしたいけど、localStorageに保存できなくなる
+// https://github.com/championswimmer/vuex-module-decorators/pull/102
+@Module({ namespaced: true, name: "CountState" })
+export default class CountState extends VuexModule {
   count: number = 0;
-}
 
-export interface CountMutations {
-  inc: any;
-}
-
-export interface CountActions {
-  incAsync: any;
-}
-
-const mutations: DefineMutations<CountMutations, CountState> = {
-  inc(state) {
-    state.count++;
+  @Mutation
+  public inc() {
+    this.count++;
   }
-}
 
-const actions: DefineActions<CountActions, CountState, CountMutations> = {
-  incAsync({ commit }) {
+  @Action
+  public incAsync() {
     return new Promise<any>(res => {
       setTimeout(() => {
-        commit('inc');
+        this.inc();
         res();
       }, 1000);
-    });
+    })
   }
 }
-
-const store: Module<CountState, any> = {
-  namespaced: true,
-  state: new CountState(),
-  mutations,
-  actions,
-}
-
-export default store;

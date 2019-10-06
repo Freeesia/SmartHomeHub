@@ -9,21 +9,19 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { State, Getter, Action, Mutation, namespace } from "vuex-class";
-
-const CountModule = namespace("CountState");
+import { CountModule } from "@/store";
 
 @Component({})
 export default class TestComponent extends Vue {
-  @CountModule.State
-  count!: number;
-  @CountModule.Action
-  incAsync!: () => Promise<any>;
   isBusy = false;
+
+  public get count() {
+    return CountModule.count;
+  }
 
   async inc() {
     this.isBusy = true;
-    await this.incAsync();
+    await CountModule.incAsync();
     this.isBusy = false;
   }
 }

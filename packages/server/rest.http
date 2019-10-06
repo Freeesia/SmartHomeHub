@@ -1,4 +1,5 @@
 GET http://localhost:3000/api/pc/
+Authorization: Bearer {{jwt}}
 
 ###
 GET http://localhost:3000/api/ps4/
@@ -36,3 +37,19 @@ POST http://localhost:3000/api/ps4/off
 
 ###
 POST http://localhost:3000/api/ps4/on
+
+###
+POST http://localhost:3000/api/user/login
+Content-Type: application/x-www-form-urlencoded
+
+username={{name}}
+&password={{pass}}
+###
+POST http://localhost:3000/api/user/login
+Authorization: Bearer {{jwt}}
+###
+POST http://localhost:3000/api/user/logout
+###
+GET http://localhost:3000/api/user/jwt
+###
+GET http://localhost:3000/api/user/
