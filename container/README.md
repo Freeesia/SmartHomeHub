@@ -9,14 +9,13 @@ Vueクライアントをビルドします。ビルド時の依存に必要な�
 Vue CLI 3／Webpack 4のビルドコマンドではOpenSSLのlegacy providerを有効にします。
 本番用の依存とアプリの実行環境は、固定したNode 10.16.3を維持します。
 
-コンテナはUID 1001／GID 0で動作し、TCP 3000を使用します。
-次のファイルを読み取り専用でマウントしてください。
+実行用イメージにはserverの本番用依存とコンパイル済みのアプリだけを用意します。
+UID 1001／GID 0で`node app/bin/www.js`を直接実行し、TCP 3000を使用します。
 
-- `/etc/shh/settings.json`：ConfigMapから渡す通常設定。
-- `/run/secrets/shh/secrets.json`：Secretから渡す`voiceKey`、`remoToken`、
-  `jwtSecret`、`ldapPassword`、`sessionSecret`。
-
-起動時に両方を合成し、権限0600の`/run/shh/config.json`を生成します。
+完成済みの`config.json`を`/opt/shh/config.json`へ読み取り専用でマウントしてください。
+アプリはこのファイルをそのまま読みます。設定の合成や書き出しは行いません。
+秘密値を含むため、K3sではSealedSecretから生成したSecretをマウントします。
+設定ファイルの形式は`packages/server/config.sample.json`を参照してください。
 `.dockerignore`で、稼働物のアーカイブ、実行時の設定・認証情報・秘密鍵、
 Gitの管理情報、ローカルの依存・ビルド成果物を除外しています。
 本番の秘密情報をイメージのビルドに渡さないでください。
