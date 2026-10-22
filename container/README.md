@@ -1,31 +1,32 @@
-# Source-built container
+# ソースからのコンテナイメージ作成
 
 ```sh
 docker build -t shh:local .
 ```
 
-The two-stage Dockerfile builds the TypeScript server and Vue client from the
-existing frozen `yarn.lock`. Node 22 is needed only for build dependencies;
-the Vue CLI 3/Webpack 4 command enables its OpenSSL legacy provider. Production
-dependencies and the application run on pinned Node 10.16.3.
+2段階のDockerfileで、既存の`yarn.lock`を固定したままTypeScriptサーバーと
+Vueクライアントをビルドします。ビルド時の依存に必要なため、その段階だけNode 22を使い、
+Vue CLI 3／Webpack 4のビルドコマンドではOpenSSLのlegacy providerを有効にします。
+本番用の依存とアプリの実行環境は、固定したNode 10.16.3を維持します。
 
-The container runs as UID 1001/GID 0 on TCP 3000. Mount these files read-only:
+コンテナはUID 1001／GID 0で動作し、TCP 3000を使用します。
+次のファイルを読み取り専用でマウントしてください。
 
-- `/etc/shh/settings.json`: ordinary settings from a ConfigMap.
-- `/run/secrets/shh/secrets.json`: `voiceKey`, `remoToken`, `jwtSecret`,
-  `ldapPassword`, and `sessionSecret` from a Secret.
+- `/etc/shh/settings.json`：ConfigMapから渡す通常設定。
+- `/run/secrets/shh/secrets.json`：Secretから渡す`voiceKey`、`remoToken`、
+  `jwtSecret`、`ldapPassword`、`sessionSecret`。
 
-The entrypoint combines them into `/run/shh/config.json` with mode 0600.
-The build context allows source and build metadata only; runtime archives,
-configuration, credentials, keys, Git metadata, and local dependencies are
-excluded. Never pass production credentials to the image build.
+起動時に両方を合成し、権限0600の`/run/shh/config.json`を生成します。
+ビルドに渡すファイルはソースとビルド情報に限定しています。稼働物のアーカイブ、
+実行時の設定・認証情報・秘密鍵、Gitの管理情報、ローカルの依存は含めません。
+本番の秘密情報をイメージのビルドに渡さないでください。
 
-PRs build only, with read-only permissions. On `master`, Actions builds once
-and publishes `ghcr.io/freeesia/smarthomehub:sha-COMMIT_SHA` and `:latest` using
-the workflow's `GITHUB_TOKEN`. Manual publishing also requires `master`.
-No personal write token or package visibility change is needed.
+PRでは読み取り専用の権限でビルドのみを行います。`master`ではActionsが1回ビルドし、
+ワークフローの`GITHUB_TOKEN`で`ghcr.io/freeesia/smarthomehub:sha-COMMIT_SHA`と
+`:latest`を発行します。手動での発行も`master`が対象です。
+書き込み用の個人トークンの作成や、パッケージの公開属性変更は不要です。
 
-For deployment, use the published digest, `imagePullPolicy: Always`, and an
-existing `ghcr.io` pull Secret with package read access. Keep settings and
-credentials in runtime mounts. WOL requires the deployment's host network;
-the PS4 controller remains unregistered.
+デプロイ時は、発行済みのdigest、`imagePullPolicy: Always`、対象パッケージの
+読み取り権限を持つ既存の`ghcr.io`用Secretを使用してください。
+設定と認証情報は引き続き実行時にマウントします。
+WOLにはホストネットワークが必要です。PS4のコントローラーは登録していません。
