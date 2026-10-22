@@ -1,11 +1,16 @@
 {
-  "name": "app",
+  "name": "smart-home-hub",
   "version": "0.1.0",
   "private": true,
   "workspaces": [
     "packages/*"
   ],
-  "devDependencies": {
-    "lerna": "^3.16.4"
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
   }
 }

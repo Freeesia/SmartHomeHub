@@ -1,15 +1,14 @@
 import { Client as castv2, DefaultMediaReceiver } from "castv2-client";
-import googletts from "google-tts-api";
+import { getAudioUrl } from "google-tts-api";
 import voicetext from "voicetext";
-import crypto from "crypto";
-import url from "url";
+import crypto from "node:crypto";
 const SPEAKER = voicetext.prototype.SPEAKER;
 const EMOTION = voicetext.prototype.EMOTION;
 const EMOTION_LEVEL = voicetext.prototype.EMOTION_LEVEL;
 
 export default class GoogleHomeNotifier {
   private options: GoogleHomeNotifierOptions;
-  public dic = {};
+  public dic: Record<string, Buffer> = {};
 
   constructor(options: GoogleHomeNotifierOptions) {
     this.options = options;
@@ -22,7 +21,7 @@ export default class GoogleHomeNotifier {
         .speaker(SPEAKER.HIKARI)
         .emotion(EMOTION.HAPPINESS)
         .emotion_level(EMOTION_LEVEL.HIGH)
-        .speak(text, (err, buf) => {
+        .speak(text, (err: unknown, buf: Buffer) => {
           if (err) return reject(err);
           resolve(buf);
         });
@@ -30,7 +29,7 @@ export default class GoogleHomeNotifier {
   }
 
   public async notify(text: string, language: string): Promise<string> {
-    const url = await googletts(text, language, 1, 1000);
+    const url = getAudioUrl(text, { lang: language });
     return await this.onDeviceUp(this.options.googleHomeUrl, url);
   }
 
@@ -42,7 +41,7 @@ export default class GoogleHomeNotifier {
     this.dic[md5] = buf;
     return await this.onDeviceUp(
       this.options.googleHomeUrl,
-      url.resolve(this.options.baseUrl, md5)
+      new URL(md5, this.options.baseUrl).href
     );
   }
 
@@ -54,21 +53,28 @@ export default class GoogleHomeNotifier {
 
   private async onDeviceUp(host: string, url: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      var client = new castv2();
+      const client = new castv2();
       client.connect(host, () => {
-        client.launch(DefaultMediaReceiver, (err, player) => {
-          var media = {
+        client.launch(DefaultMediaReceiver, (err: unknown, player: any) => {
+          if (err) {
+            client.close();
+            return reject(err);
+          }
+          const media = {
             contentId: url,
             contentType: "audio/mp3",
             streamType: "BUFFERED" // or LIVE
           };
-          player.load(media, { autoplay: true }, (err, status) => {
+          player.load(media, { autoplay: true }, (err: unknown) => {
             client.close();
+            if (err) {
+              return reject(err);
+            }
             resolve("Device notified");
           });
         });
       });
-      (<any>client).on("error", err => {
+      client.on("error", (err: unknown) => {
         client.close();
         reject(err);
       });

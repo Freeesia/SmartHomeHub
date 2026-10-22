@@ -1,6 +1,0 @@
-{
-  "uid": "app",
-  "append": true,
-  "script": "/shh/app/bin/www.js",
-  "workingDir": "/shh"
-}

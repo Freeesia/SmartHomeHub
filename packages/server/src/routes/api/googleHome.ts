@@ -3,7 +3,7 @@ import ConfigService from "../../modules/configService";
 import GoogleHomeNotifier, {
   GoogleHomeNotifierOptions
 } from "../../modules/googleHomeNotifier";
-import url from "url";
+import { Service } from "typedi";
 import {
   Post,
   BodyParam,
@@ -13,13 +13,14 @@ import {
   Authorized
 } from "routing-controllers";
 
+@Service()
 @JsonController("/googlehome")
 export default class GoogleHomeController {
   private notifier: GoogleHomeNotifier;
 
   constructor(configService: ConfigService) {
     const config = configService.get<GoogleHomeNotifierOptions>("googlehome");
-    config.baseUrl = url.resolve("http://" + config.baseUrl, "api/googlehome/");
+    config.baseUrl = new URL("api/googlehome/", "http://" + config.baseUrl).href;
     this.notifier = new GoogleHomeNotifier(config);
   }
 

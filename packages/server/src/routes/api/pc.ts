@@ -1,10 +1,10 @@
 import "reflect-metadata";
 import { JsonController, Param, Get, Post, NotFoundError, OnUndefined, Authorized } from "routing-controllers";
 import wol from "wol";
-import bluebird from "bluebird";
+import { Service } from "typedi";
 import ConfigService from "../../modules/configService";
-const wolAsync = bluebird.promisifyAll(wol);
 
+@Service()
 @JsonController("/pc")
 @Authorized()
 export default class PcController {
@@ -24,7 +24,7 @@ export default class PcController {
   async onPC(@Param("pc") pc: string): Promise<void> {
     const mac = this.config[pc];
     if (!mac) throw new NotFoundError("Unknown PC");
-    await wolAsync.wakeAsync(mac);
+    await wol.wake(mac);
   }
 }
 
