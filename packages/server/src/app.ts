@@ -17,7 +17,6 @@ import { Container } from "typedi";
 import ConfigService from "./modules/configService";
 import PcController from "./routes/api/pc";
 import GoogleHomeController from "./routes/api/googleHome";
-import Ps4Controller from "./routes/api/ps4";
 import passport from "passport";
 import LdapStrategy from "passport-ldapauth";
 import {
@@ -59,7 +58,6 @@ useExpressServer(app, {
   controllers: [
     PcController,
     GoogleHomeController,
-    Ps4Controller,
     UserController
   ],
   authorizationChecker: (action: Action) =>
