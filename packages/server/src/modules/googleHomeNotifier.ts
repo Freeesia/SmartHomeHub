@@ -1,10 +1,8 @@
 import { Client as castv2, DefaultMediaReceiver } from "castv2-client";
 import { getAudioUrl } from "google-tts-api";
-import voicetext from "voicetext";
 import crypto from "node:crypto";
-const SPEAKER = voicetext.prototype.SPEAKER;
-const EMOTION = voicetext.prototype.EMOTION;
-const EMOTION_LEVEL = voicetext.prototype.EMOTION_LEVEL;
+
+const VOICETEXT_API_URL = "https://api.voicetext.jp/v1/tts";
 
 export default class GoogleHomeNotifier {
   private options: GoogleHomeNotifierOptions;
@@ -15,17 +13,32 @@ export default class GoogleHomeNotifier {
   }
 
   private async speak(text: string): Promise<Buffer> {
-    return new Promise<Buffer>((resolve, reject) => {
-      const voice = new voicetext(this.options.voiceKey);
-      voice
-        .speaker(SPEAKER.HIKARI)
-        .emotion(EMOTION.HAPPINESS)
-        .emotion_level(EMOTION_LEVEL.HIGH)
-        .speak(text, (err: unknown, buf: Buffer) => {
-          if (err) return reject(err);
-          resolve(buf);
-        });
+    if (!text) {
+      throw new Error("invalid argument. text: null");
+    }
+    const params = new URLSearchParams({
+      text: text.slice(0, 200),
+      speaker: "hikari",
+      emotion: "happiness",
+      emotion_level: "2",
+      format: "wav",
+      pitch: "100",
+      speed: "100",
+      volume: "100",
     });
+    const res = await fetch(VOICETEXT_API_URL, {
+      method: "POST",
+      headers: {
+        Authorization:
+          "Basic " +
+          Buffer.from(`${this.options.voiceKey}:`).toString("base64"),
+      },
+      body: params,
+    });
+    if (!res.ok) {
+      throw new Error(`VoiceText API error ${res.status}: ${await res.text()}`);
+    }
+    return Buffer.from(await res.arrayBuffer());
   }
 
   public async notify(text: string, language: string): Promise<string> {

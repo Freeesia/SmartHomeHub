@@ -12,5 +12,13 @@
     "build": "npm run build --workspaces",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "overrides": {
+    "google-tts-api": {
+      "axios": "^1.20.0"
+    },
+    "castv2": {
+      "protobufjs": "^8.8.1"
+    }
   }
 }

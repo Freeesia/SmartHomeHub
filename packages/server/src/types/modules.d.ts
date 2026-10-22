@@ -1,5 +1,4 @@
 declare module "castv2-client";
-declare module "voicetext";
 declare module "ps4-waker" {
   export interface Socket {
     login(pin: string, callback: (err: unknown) => void): void;

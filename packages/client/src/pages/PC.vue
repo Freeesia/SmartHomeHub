@@ -1,60 +1,62 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" hide-default-footer class="elevation-1">
-      <template v-slot:item.name="{ item }">
-        {{ item }}
+    <v-data-table
+      :headers="headers"
+      :items="items"
+      hide-default-footer
+      class="elevation-1"
+    >
+      <template #[`item.action`]="{ item }">
+        <v-btn
+          color="secondary"
+          variant="text"
+          icon="mdi-power"
+          @click="powerOn(item.name)"
+        />
       </template>
-      <template v-slot:item.action="{ item }">
-        <v-btn color="secondary" text icon @click="powerOn(item)">
-          <v-icon>power_settings_new</v-icon>
-        </v-btn>
-      </template>
-      <template slot="no-data">
+      <template #no-data>
         <v-btn color="primary" @click="initialize">Reset</v-btn>
       </template>
     </v-data-table>
     <v-snackbar v-model="snackbar" :color="snackColor">
       {{ snackText }}
-      <v-btn dark text @click="snackbar = false">Close</v-btn>
+      <template #actions>
+        <v-btn variant="text" @click="snackbar = false">Close</v-btn>
+      </template>
     </v-snackbar>
   </div>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-import Axios from "axios";
+<script setup lang="ts">
+import { computed, onMounted, ref } from "vue";
+import axios from "axios";
 
-@Component({})
-export default class PC extends Vue {
-  headers = [
-    { text: "PC名", value: "name", sortable: false },
-    { text: "操作", value: "action", sortable: false }
-  ];
-  items: string[] = [];
-  snackbar = false;
-  snackText = "";
-  snackColor = "";
+const headers = [
+  { title: "PC名", key: "name", sortable: false },
+  { title: "操作", key: "action", sortable: false },
+];
+const pcs = ref<string[]>([]);
+const items = computed(() => pcs.value.map((name) => ({ name })));
+const snackbar = ref(false);
+const snackText = ref("");
+const snackColor = ref("");
 
-  created() {
-    this.initialize();
-  }
-
-  async initialize() {
-    const res = await Axios.get("/api/pc");
-    this.items = res.data;
-  }
-
-  async powerOn(item: string) {
-    try {
-      await Axios.post(`/api/pc/${item}/on`);
-      this.snackColor = "success";
-      this.snackText = "OK";
-    } catch (error) {
-      this.snackColor = "error";
-      this.snackText = error;
-    }
-    this.snackbar = true;
-  }
+async function initialize() {
+  const res = await axios.get<string[]>("/api/pc");
+  pcs.value = res.data;
 }
+
+async function powerOn(name: string) {
+  try {
+    await axios.post(`/api/pc/${encodeURIComponent(name)}/on`);
+    snackColor.value = "success";
+    snackText.value = "OK";
+  } catch (error) {
+    snackColor.value = "error";
+    snackText.value = String(error);
+  }
+  snackbar.value = true;
+}
+
+onMounted(initialize);
 </script>
