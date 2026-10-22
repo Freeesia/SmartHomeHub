@@ -16,8 +16,8 @@ UID 1001／GID 0で`node app/bin/www.js`を直接実行し、TCP 3000を使用�
 アプリはこのファイルをそのまま読みます。設定の合成や書き出しは行いません。
 秘密値を含むため、K3sではSealedSecretから生成したSecretをマウントします。
 設定ファイルの形式は`packages/server/config.sample.json`を参照してください。
-`.dockerignore`で、稼働物のアーカイブ、実行時の設定・認証情報・秘密鍵、
-Gitの管理情報、ローカルの依存・ビルド成果物を除外しています。
+`.dockerignore`は、Git管理情報、`node_modules`、ルートの`dist`、`config.json`、
+PS4の認証ファイル、Vue CLIの環境ファイルだけを除外します。
 本番の秘密情報をイメージのビルドに渡さないでください。
 
 `master`へのpush時に、ActionsがGHCRへログインして次の2コマンドを実行します。

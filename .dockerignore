@@ -1,12 +1,6 @@
-**/.git
+.git
 **/node_modules
-**/dist
-**/.runtime
+dist
 **/config.json
-**/settings.json
-**/secrets.*
+**/ps4-wake.credentials.json
 **/.env*
-**/*credentials*
-**/*.pem
-**/*.key
-**/*.tar*
