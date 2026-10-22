@@ -13,21 +13,18 @@ COPY postcss.config.js ./postcss.config.js
 RUN yarn workspace server build \
     && NODE_OPTIONS=--openssl-legacy-provider yarn workspace client build
 
-FROM node:10.16.3@sha256:925162bdc4b23422763cb2d08ecf1661bbbd856ab54b959517924054e17813fc AS dependencies
-WORKDIR /build
+FROM node:10.16.3@sha256:925162bdc4b23422763cb2d08ecf1661bbbd856ab54b959517924054e17813fc AS runtime
+LABEL org.opencontainers.image.source="https://github.com/Freeesia/SmartHomeHub"
+WORKDIR /opt/shh
 COPY package.json yarn.lock ./
 COPY packages/client/package.json ./packages/client/package.json
 COPY packages/server/package.json ./packages/server/package.json
 RUN yarn install --frozen-lockfile --production --non-interactive \
-    && rm node_modules/client node_modules/server
-
-FROM node:10.16.3@sha256:925162bdc4b23422763cb2d08ecf1661bbbd856ab54b959517924054e17813fc AS runtime
-LABEL org.opencontainers.image.source="https://github.com/Freeesia/SmartHomeHub"
-WORKDIR /opt/shh
-COPY --from=dependencies /build/node_modules ./node_modules
+    && yarn cache clean \
+    && rm node_modules/client node_modules/server \
+    && mkdir -p /run/shh && chown 1001:0 /run/shh
 COPY --from=build /build/dist ./app
 COPY container/start.js ./start.js
-RUN mkdir -p /run/shh && chown 1001:0 /run/shh
 USER 1001:0
 WORKDIR /run/shh
 EXPOSE 3000/tcp
