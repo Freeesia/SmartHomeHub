@@ -5,17 +5,19 @@
   "tasks": [
     {
       "label": "server:serve",
-      "type": "shell",
-      "command": "yarn",
-      "args": ["workspace", "server", "serve"],
-      "isBackground": true
+      "type": "npm",
+      "script": "serve",
+      "path": "packages/server",
+      "isBackground": true,
+      "problemMatcher": []
     },
     {
       "label": "client:serve",
-      "type": "shell",
-      "command": "yarn",
-      "args": ["workspace", "client", "serve"],
-      "isBackground": true
+      "type": "npm",
+      "script": "serve",
+      "path": "packages/client",
+      "isBackground": true,
+      "problemMatcher": []
     },
     {
       "label": "serve",
@@ -25,19 +27,13 @@
     },
     {
       "label": "build",
-      "command": "lerna",
-      "args": ["run", "build"],
+      "type": "npm",
+      "script": "build",
+      "problemMatcher": ["$tsc"],
       "group": {
         "kind": "build",
         "isDefault": true
       }
-    },
-    {
-      "label": "deploy",
-      "type": "shell",
-      "command": "ansible-playbook",
-      "args": ["-i", "deploy/hosts", "playbook.yml"],
-      "problemMatcher": []
     }
   ]
 }

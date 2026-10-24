@@ -10,17 +10,18 @@ import {
 } from "routing-controllers";
 import passport from "passport";
 import jwt, { SignOptions } from "jsonwebtoken";
+import { Service } from "typedi";
 import ConfigService from "../../modules/configService";
-import { StrategyOptions as JwtOptions } from "passport-jwt";
 import { Request } from "express";
 
+@Service()
 @JsonController("/user")
 export default class UserController {
   private readonly config: SignOptions;
   private readonly secretKey: string | Buffer;
 
   constructor(configService: ConfigService) {
-    const op = configService.get<JwtOptions>("jwt");
+    const op = configService.get<JwtConfig>("jwt");
     this.secretKey = op.secretOrKey;
     this.config = {
       issuer: op.issuer,
@@ -38,8 +39,10 @@ export default class UserController {
 
   @Post("/logout")
   @OnUndefined(200)
-  logout(@Req() req: Request) {
-    req.logout();
+  logout(@Req() req: Request): Promise<void> {
+    return new Promise<void>((resolve, reject) =>
+      req.logout((err) => (err ? reject(err) : resolve())),
+    );
   }
 
   @Get("/jwt")
@@ -53,4 +56,10 @@ export default class UserController {
   me(@CurrentUser() user: any): any {
     return user;
   }
+}
+
+interface JwtConfig {
+  secretOrKey: string;
+  issuer?: string;
+  audience?: string | string[];
 }

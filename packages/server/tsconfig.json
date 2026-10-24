@@ -1,20 +1,19 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "target": "es2024",
+    "lib": ["es2024"],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "types": ["node"],
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "es6",
-    // TODO : ↓有効にしたほうが良い
-    // "noImplicitAny": true,
-    "moduleResolution": "node",
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
-    "outDir": "../../dist",
-    "baseUrl": ".",
-    "paths": {
-      "*": ["node_modules/*", "src/types/*"]
-    }
+    "rootDir": "src",
+    "outDir": "../../dist"
   },
   "include": ["src/**/*"]
 }

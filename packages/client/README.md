@@ -1,29 +1,31 @@
-# smart-home-hub
+# client
+
+Vue 3 + Vuetify + Vite で構築したフロントエンドです。
 
 ## Project setup
-```
-yarn install
+
+リポジトリのルートで依存関係をインストールします。
+
+```sh
+npm ci
 ```
 
 ### Compiles and hot-reloads for development
-```
-yarn run serve
+
+```sh
+npm run serve --workspace client
 ```
 
-### Compiles and minifies for production
-```
-yarn run build
+`/api` へのリクエストは `http://localhost:3000` (server) にプロキシされます。
+
+### Type-check, compile and minify for production
+
+```sh
+npm run build --workspace client
 ```
 
-### Run your tests
-```
-yarn run test
-```
+### Lint
 
-### Lints and fixes files
+```sh
+npm run lint --workspace client
 ```
-yarn run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

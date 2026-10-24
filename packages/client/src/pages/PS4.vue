@@ -1,111 +1,100 @@
 <template>
-  <v-layout>
-    <v-flex xs12 md6 offset-md3>
+  <v-row justify="center">
+    <v-col cols="12" md="6">
       <v-card v-if="status">
-        <v-img height="200px" v-if="media" :src="media"></v-img>
+        <v-img v-if="media" height="200px" :src="media" cover />
         <v-btn
           color="primary"
-          style="top:16px; opacity: 0.8"
+          style="position: absolute; top: 16px; right: 16px; opacity: 0.8"
           :loading="refreshing"
           :disabled="refreshing"
-          dark
-          depressed
-          absolute
-          right
-          fab
-          small
+          icon="mdi-refresh"
+          size="small"
+          variant="flat"
           @click="refresh"
-        >
-          <v-icon>refresh</v-icon>
-        </v-btn>
+        />
 
         <v-card-title>{{ status["host-name"] }}</v-card-title>
         <v-card-text>{{ state }}</v-card-text>
 
         <v-card-actions>
-          <v-tooltip top>
-            <template v-slot:activator="{ on }">
+          <v-tooltip :text="powerTo" location="top">
+            <template #activator="{ props }">
               <v-btn
+                v-bind="props"
                 color="secondary"
-                text
-                icon
-                v-on="on"
+                variant="text"
+                icon="mdi-power"
                 :loading="powering"
                 :disabled="powering"
                 @click="power"
-              >
-                <v-icon>power_settings_new</v-icon>
-              </v-btn>
+              />
             </template>
-            <span>{{ powerTo }}</span>
           </v-tooltip>
         </v-card-actions>
       </v-card>
-    </v-flex>
-  </v-layout>
+    </v-col>
+  </v-row>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-import Axios from "axios";
+<script setup lang="ts">
+import { computed, onMounted, ref } from "vue";
+import axios from "axios";
 
-@Component({})
-export default class PS4 extends Vue {
-  status: any = null;
-  refreshing = false;
-  powering = false;
+interface Ps4Status {
+  statusCode?: number;
+  status?: string;
+  "host-name"?: string;
+  "running-app-name"?: string;
+  "running-app-meta"?: { icons?: { icon?: string }[] };
+  [key: string]: unknown;
+}
 
-  get state(): string {
-    if (this.status["running-app-name"]) {
-      return this.status["running-app-name"];
-    } else if (this.status) {
-      return this.status.status;
-    } else {
-      return "Unknown";
-    }
+const status = ref<Ps4Status | null>(null);
+const refreshing = ref(false);
+const powering = ref(false);
+
+const state = computed(() => {
+  if (!status.value) {
+    return "Unknown";
   }
+  return status.value["running-app-name"] ?? status.value.status ?? "Unknown";
+});
 
-  get media(): string | null {
-    if (
-      this.status &&
-      this.status["running-app-meta"] &&
-      this.status["running-app-meta"].icons[0].icon
-    ) {
-      return this.status["running-app-meta"].icons[0].icon;
-    } else {
-      return null;
-    }
+const media = computed(
+  () => status.value?.["running-app-meta"]?.icons?.[0]?.icon ?? null,
+);
+
+const powerTo = computed(() => {
+  if (!status.value) {
+    return "";
   }
+  return status.value.statusCode == 200 ? "off" : "on";
+});
 
-  get powerTo(): string {
-    if (this.status) {
-      return this.status.statusCode == 200 ? "off" : "on";
-    } else {
-      return "";
-    }
+async function refresh() {
+  if (refreshing.value) {
+    return;
   }
-
-  created() {
-    this.refresh();
-  }
-
-  async refresh() {
-    if (this.refreshing) {
-      return;
-    }
-    this.refreshing = true;
-    let res = await Axios.get("/api/ps4");
-    this.status = res.data;
-    this.refreshing = false;
-  }
-
-  async power() {
-    this.powering = true;
-    await Axios.post("/api/ps4/" + this.powerTo);
-    await new Promise<any>(res => setTimeout(() => res(), 2000));
-    await this.refresh();
-    this.powering = false;
+  refreshing.value = true;
+  try {
+    const res = await axios.get<Ps4Status>("/api/ps4");
+    status.value = res.data;
+  } finally {
+    refreshing.value = false;
   }
 }
+
+async function power() {
+  powering.value = true;
+  try {
+    await axios.post("/api/ps4/" + powerTo.value);
+    await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+    await refresh();
+  } finally {
+    powering.value = false;
+  }
+}
+
+onMounted(refresh);
 </script>
