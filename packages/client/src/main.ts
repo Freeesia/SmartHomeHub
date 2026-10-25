@@ -1,30 +1,15 @@
-import Vue from "vue";
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import App from "./App.vue";
-import store from "./store";
-import VueRouter from "vue-router";
-import "./registerServiceWorker";
-import vuetify from './plugins/vuetify';
-import Home from './pages/Home.vue';
-import PC from './pages/PC.vue';
-import PS4 from './pages/PS4.vue';
-import Login from './pages/Login.vue';
+import router from "./router";
+import vuetify from "./plugins/vuetify";
 
-Vue.config.productionTip = false;
-Vue.use(VueRouter);
+const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
 
-const router = new VueRouter({
-  mode: "history",
-  routes: [
-    { path: "/", component: Home },
-    { path: "/pc", component: PC },
-    { path: "/ps4", component: PS4 },
-    { path: "/login", component: Login }
-  ]
-});
-
-new Vue({
-  router,
-  store,
-  vuetify,
-  render: h => h(App)
-}).$mount("#app");
+createApp(App).use(pinia).use(router).use(vuetify).mount("#app");

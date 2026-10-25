@@ -1,28 +1,21 @@
 <template>
   <div>
-    <v-btn color="primary" dark @click="inc" role="button">up</v-btn>
-    <v-progress-circular v-if="isBusy" indeterminate color="primary"></v-progress-circular>
-    <p>カウント {{ count }}</p>
+    <v-btn color="primary" role="button" @click="inc">up</v-btn>
+    <v-progress-circular v-if="isBusy" indeterminate color="primary" />
+    <p>カウント {{ countStore.count }}</p>
   </div>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-import { CountModule } from "@/store";
+<script setup lang="ts">
+import { ref } from "vue";
+import { useCountStore } from "@/stores/count";
 
-@Component({})
-export default class TestComponent extends Vue {
-  isBusy = false;
+const countStore = useCountStore();
+const isBusy = ref(false);
 
-  public get count() {
-    return CountModule.count;
-  }
-
-  async inc() {
-    this.isBusy = true;
-    await CountModule.incAsync();
-    this.isBusy = false;
-  }
+async function inc() {
+  isBusy.value = true;
+  await countStore.incAsync();
+  isBusy.value = false;
 }
 </script>

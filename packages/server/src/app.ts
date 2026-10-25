@@ -6,13 +6,12 @@ import {
   NotFoundError
 } from "routing-controllers";
 import express from "express";
-import path from "path";
+import path from "node:path";
 import logger from "morgan";
 import cookieParser from "cookie-parser";
-import bodyParser from "body-parser";
 import history from "connect-history-api-fallback";
 import compression from "compression";
-import fs from "fs";
+import fs from "node:fs";
 import { Container } from "typedi";
 import ConfigService from "./modules/configService";
 import PcController from "./routes/api/pc";
@@ -21,7 +20,7 @@ import passport from "passport";
 import LdapStrategy from "passport-ldapauth";
 import {
   Strategy as JwtStrategy,
-  StrategyOptions as JwtOptions,
+  StrategyOptionsWithoutRequest as JwtOptions,
   ExtractJwt
 } from "passport-jwt";
 import UserController from "./routes/api/user";
@@ -46,8 +45,8 @@ app.use(
 app.use(compression());
 app.use(history());
 app.use(logger("dev"));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(passport.initialize());
@@ -65,7 +64,7 @@ useExpressServer(app, {
       if (action.request.user) {
         return resolve(true);
       }
-      passport.authenticate("jwt", { session: false }, (err, user) => {
+      passport.authenticate("jwt", { session: false }, (err: unknown, user: Express.User | false) => {
         if (err || !user) {
           return resolve(false);
         } else {
@@ -83,11 +82,14 @@ passport.use(
   })
 );
 
-let jwtConfig = <JwtOptions>config.jwt;
-jwtConfig.jwtFromRequest = ExtractJwt.fromExtractors([
-  ExtractJwt.fromAuthHeaderAsBearerToken(),
-  ExtractJwt.fromUrlQueryParameter("token"),
-]);
+const jwtConfig: JwtOptions = {
+  ...config.jwt,
+  jwtFromRequest: ExtractJwt.fromExtractors([
+    ExtractJwt.fromAuthHeaderAsBearerToken(),
+    ExtractJwt.fromUrlQueryParameter("token"),
+  ]),
+  passReqToCallback: false,
+};
 
 passport.use(
   new JwtStrategy(

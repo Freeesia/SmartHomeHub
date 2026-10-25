@@ -1,4 +1,5 @@
 import { Device, Socket } from "ps4-waker";
+import { Service } from "typedi";
 import ConfigService from "../../modules/configService";
 import {
   Get,
@@ -11,6 +12,7 @@ import {
 } from "routing-controllers";
 import Axios from "axios";
 
+@Service()
 @JsonController("/ps4")
 @Authorized()
 export default class Ps4Controller {
@@ -93,9 +95,9 @@ export default class Ps4Controller {
   @Post("/login/:pin")
   @OnUndefined(200)
   async Login(@Param("pin") pin: string): Promise<void> {
-    const socket = <Socket>await this.ps4.openSocket();
+    const socket: Socket = await this.ps4.openSocket();
     return new Promise<void>((res, rej) => {
-      socket.login(pin, err => {
+      socket.login(pin, (err: unknown) => {
         if (err) {
           rej(err);
         } else {

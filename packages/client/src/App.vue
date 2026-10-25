@@ -1,80 +1,77 @@
 <template>
   <v-app>
-    <v-navigation-drawer v-if="user" :mini-variant="!drawer" permanent clipped fixed app>
-      <v-list dense>
-        <v-list-item v-for="item in menus" :key="item.key" :to="item.key">
-          <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>{{ item.label }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+    <v-navigation-drawer v-if="user" :rail="!drawer" permanent>
+      <v-list density="compact" nav>
+        <v-list-item
+          v-for="item in menus"
+          :key="item.key"
+          :to="item.key"
+          :prepend-icon="item.icon"
+          :title="item.label"
+        />
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar dense fixed clipped-left app dark color="primary">
-      <v-app-bar-nav-icon
-        role="switch"
-        aria-label="menu"
-        v-if="user"
-        :aria-checked="drawer"
-        @click.stop="drawer = !drawer"
-      ></v-app-bar-nav-icon>
-      <v-toolbar-title>Smart Home Hub</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-menu offset-y>
-        <template v-slot:activator="{ on }">
-          <v-toolbar-items>
-            <v-btn text v-on="on" v-if="user">{{ user.sn }}</v-btn>
-          </v-toolbar-items>
-        </template>
-        <v-list>
-          <v-list-item @click="logout">
-            <v-list-item-title>Logout</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+    <v-app-bar density="compact" color="primary">
+      <template v-if="user" #prepend>
+        <v-app-bar-nav-icon
+          role="switch"
+          aria-label="menu"
+          :aria-checked="drawer"
+          @click.stop="drawer = !drawer"
+        />
+      </template>
+      <v-app-bar-title>Smart Home Hub</v-app-bar-title>
+      <template #append>
+        <v-menu v-if="user">
+          <template #activator="{ props }">
+            <v-btn variant="text" v-bind="props">{{ user.sn }}</v-btn>
+          </template>
+          <v-list>
+            <v-list-item title="Logout" @click="logout" />
+          </v-list>
+        </v-menu>
+      </template>
     </v-app-bar>
-    <v-content>
+    <v-main>
       <v-container fluid>
-        <router-view></router-view>
+        <router-view />
       </v-container>
-    </v-content>
-    <v-footer app></v-footer>
+    </v-main>
+    <v-footer app />
   </v-app>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-import Axios from "axios";
-import { UserModule } from "@/store";
+<script setup lang="ts">
+import { computed, onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useDisplay } from "vuetify";
+import { useUserStore } from "@/stores/user";
 
-@Component({})
-export default class App extends Vue {
-  drawer = true;
-  menus = [
-    { key: "/", label: "Home", icon: "home" },
-    { key: "pc", label: "PC", icon: "computer" },
-    { key: "ps4", label: "PS4", icon: "mdi-playstation" },
-    { key: "remo", label: "Nature Remo", icon: "settings_remote" }
-  ];
+const menus = [
+  { key: "/", label: "Home", icon: "mdi-home" },
+  { key: "/pc", label: "PC", icon: "mdi-monitor" },
+  { key: "/ps4", label: "PS4", icon: "mdi-sony-playstation" },
+  { key: "/remo", label: "Nature Remo", icon: "mdi-remote" },
+];
 
-  public get user(): any {
-    return UserModule.user;
-  }
+const userStore = useUserStore();
+const router = useRouter();
+const route = useRoute();
+const { mdAndUp } = useDisplay();
 
-  public async logout() {
-    await UserModule.logout();
-    this.$router.push("/login");
-  }
+const drawer = ref(mdAndUp.value);
+const user = computed(() => userStore.user);
 
-  async created() {
-    this.drawer = this.$vuetify.breakpoint.mdAndUp;
-    await UserModule.loginToken();
-    if (!this.user && this.$router.currentRoute.path !== "/login") {
-      this.$router.push("/login");
-    }
-  }
+async function logout() {
+  await userStore.logout();
+  await router.push("/login");
 }
+
+onMounted(async () => {
+  await userStore.loginToken();
+  await router.isReady();
+  if (!user.value && route.path !== "/login") {
+    await router.push("/login");
+  }
+});
 </script>

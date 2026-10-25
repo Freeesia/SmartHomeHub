@@ -5,20 +5,18 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Server",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": ["workspace", "server", "serve"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "serve", "--workspace", "server"],
       "restart": true,
-      "port": 9229
+      "port": 9229,
+      "console": "integratedTerminal"
     },
     {
       "type": "chrome",
       "request": "launch",
       "name": "Launch Chrome",
       "url": "http://localhost:8080",
-      "webRoot": "${workspaceFolder}/packages/client/src",
-      "sourceMapPathOverrides": {
-        "webpack:///./src/*": "${webRoot}/*"
-      },
+      "webRoot": "${workspaceFolder}/packages/client"
     }
   ]
 }

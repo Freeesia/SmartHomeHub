@@ -1,61 +1,78 @@
 <template>
-  <v-form v-model="valid" ref="form" lazy-validation>
+  <v-form
+    ref="form"
+    v-model="valid"
+    validate-on="lazy"
+    @submit.prevent="submit"
+  >
     <v-text-field
-      label="Name"
       v-model="name"
+      label="Name"
       :rules="nameRules"
-      prepend-icon="person"
+      prepend-icon="mdi-account"
       type="text"
+      autocomplete="username"
       required
-    ></v-text-field>
+    />
     <v-text-field
-      label="Password"
       v-model="password"
+      label="Password"
       :rules="passwordRules"
-      prepend-icon="lock"
+      prepend-icon="mdi-lock"
       type="password"
+      autocomplete="current-password"
       required
-    ></v-text-field>
+    />
 
-    <v-btn @click="submit" class="ma-1" color="primary" :loading="submitting" :disabled="!valid">submit</v-btn>
-    <v-btn @click="clear" class="ma-1">clear</v-btn>
+    <v-btn
+      type="submit"
+      class="ma-1"
+      color="primary"
+      :loading="submitting"
+      :disabled="valid === false"
+    >
+      submit
+    </v-btn>
+    <v-btn class="ma-1" @click="clear">clear</v-btn>
   </v-form>
 </template>
-<script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-import Axios from "axios";
-import { UserModule } from "@/store";
 
-@Component({})
-export default class Login extends Vue {
-  public valid = true;
-  public name = "";
-  public nameRules = [(v?: string) => !!v || "Name is required"];
-  public password = "";
-  public passwordRules = [(v?: string) => !!v || "Password is required"];
-  public submitting = false;
+<script setup lang="ts">
+import { ref, useTemplateRef } from "vue";
+import { useRouter } from "vue-router";
+import type { VForm } from "vuetify/components";
+import { useUserStore } from "@/stores/user";
 
-  public async submit() {
-    const form = <HTMLFormElement>this.$refs.form;
-    if (!form.validate()) {
-      return;
-    }
-    this.submitting = true;
-    try {
-      await UserModule.login({
-        username: this.name,
-        password: this.password
-      });
-      this.$router.push("/");
-    } catch(error) {
-      console.log(error);
-    }
-    this.submitting = false;
+const userStore = useUserStore();
+const router = useRouter();
+const form = useTemplateRef<VForm>("form");
+
+const valid = ref<boolean | null>(null);
+const name = ref("");
+const nameRules = [(v?: string) => !!v || "Name is required"];
+const password = ref("");
+const passwordRules = [(v?: string) => !!v || "Password is required"];
+const submitting = ref(false);
+
+async function submit() {
+  const result = await form.value?.validate();
+  if (!result?.valid) {
+    return;
   }
-
-  public clear() {
-    (this.$refs.form as HTMLFormElement).reset();
+  submitting.value = true;
+  try {
+    await userStore.login({
+      username: name.value,
+      password: password.value,
+    });
+    await router.push("/");
+  } catch (error) {
+    console.log(error);
   }
+  submitting.value = false;
+}
+
+function clear() {
+  form.value?.reset();
 }
 </script>

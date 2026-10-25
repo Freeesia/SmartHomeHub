@@ -1,32 +1,19 @@
-// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+// See https://containers.dev/implementors/json_reference/ for format details.
 {
-  "name": "Node.js (latest LTS) & TypeScript",
-  "dockerFile": "Dockerfile",
-
-  "runArgs": [
-    "-v",
-    "${env:HOME}${env:USERPROFILE}/.ssh:/root/.ssh-localhost:ro"
-  ],
-
-  // Uncomment the next line if you want to publish any ports.
-  "appPort": ["3000", "8080:8080"],
-
-  // Uncomment the next line if you want to add in default container specific settings.json values
-  // "settings":  { "workbench.colorTheme": "Quiet Light" },
-
-  // Uncomment the next line to run commands after the container is created.
-  "postCreateCommand": "mkdir -p ~/.ssh && cp -r ~/.ssh-localhost/* ~/.ssh && chmod 700 ~/.ssh && chmod 600 ~/.ssh/* && yarn install",
-
-  "extensions": [
-    "ms-vscode.vscode-typescript-tslint-plugin",
-    "eamodio.gitlens",
-    "gamunu.vscode-yarn",
-    "visualstudioexptteam.vscodeintellicode",
-    "octref.vetur",
-    "prograhammer.tslint-vue",
-    "esbenp.prettier-vscode",
-    "christian-kohler.path-intellisense",
-    "mutantdino.resourcemonitor",
-    "humao.rest-client"
-  ]
+  "name": "Node.js & TypeScript",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:24",
+  "forwardPorts": [3000, 8080],
+  "postCreateCommand": "npm ci",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Vue.volar",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "eamodio.gitlens",
+        "christian-kohler.path-intellisense",
+        "humao.rest-client"
+      ]
+    }
+  }
 }
