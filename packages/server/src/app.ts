@@ -25,9 +25,15 @@ import {
 } from "passport-jwt";
 import UserController from "./routes/api/user";
 import session from "express-session";
+import { createOidcRouter, oidcSettingsFromEnv } from "./modules/oidc";
+import AuthMethods from "./modules/authMethods";
 
 const config = JSON.parse(fs.readFileSync("config.json", "utf8"));
 Container.set(ConfigService, new ConfigService(config));
+// Password (LDAP) sign-in can be turned off with LDAP_ENABLED=false; OIDC is on when OIDC_* is set.
+const oidcSettings = oidcSettingsFromEnv();
+const authMethods = new AuthMethods(process.env.LDAP_ENABLED !== "false" && !!config.ldap, !!oidcSettings);
+Container.set(AuthMethods, authMethods);
 useContainer(Container);
 const app = express();
 
@@ -43,7 +49,8 @@ app.use(
   })
 );
 app.use(compression());
-app.use(history());
+// Keep /api (including the OIDC browser redirects) out of the SPA fallback.
+app.use(history({ rewrites: [{ from: /^\/api\/.*$/, to: (context) => context.parsedUrl.path ?? "/" }] }));
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -51,6 +58,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(passport.initialize());
 app.use(passport.session());
+if (oidcSettings) {
+  app.use("/api/user/oidc", createOidcRouter(oidcSettings));
+}
 
 useExpressServer(app, {
   routePrefix: "/api",
@@ -76,11 +86,13 @@ useExpressServer(app, {
   currentUserChecker: (action: Action) => action.request.user
 });
 
-passport.use(
-  new LdapStrategy({
-    server: config.ldap
-  })
-);
+if (authMethods.password) {
+  passport.use(
+    new LdapStrategy({
+      server: config.ldap
+    })
+  );
+}
 
 const jwtConfig: JwtOptions = {
   ...config.jwt,
