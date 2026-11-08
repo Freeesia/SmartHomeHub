@@ -92,13 +92,7 @@ passport.use(
 passport.use(
   new OpenIDConnectStrategy(
     {
-      issuer: process.env.OIDC_ISSUER!,
-      authorizationURL: process.env.OIDC_AUTHORIZATION_URL!,
-      tokenURL: process.env.OIDC_TOKEN_URL!,
-      userInfoURL: process.env.OIDC_USERINFO_URL!,
-      clientID: process.env.OIDC_CLIENT_ID!,
-      clientSecret: process.env.OIDC_CLIENT_SECRET!,
-      callbackURL: process.env.OIDC_CALLBACK_URL!,
+      ...config.oidc,
       scope: ["profile", "email"]
     },
     (issuer: string, profile: OpenIDConnectStrategy.Profile, done: OpenIDConnectStrategy.VerifyCallback) =>
