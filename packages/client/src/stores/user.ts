@@ -18,13 +18,7 @@ export const useUserStore = defineStore(
       token.value ? jwtDecode<User>(token.value) : null,
     );
 
-    async function login(payload: { username: string; password: string }) {
-      const res = await axios.post<string>("/api/user/login", payload);
-      token.value = res.data;
-    }
-
-    /** After the OIDC redirect the server holds a session; exchange it for the usual JWT. */
-    async function loginSession() {
+    async function login() {
       const res = await axios.get<string>("/api/user/jwt");
       token.value = res.data;
     }
@@ -48,7 +42,7 @@ export const useUserStore = defineStore(
       token.value = null;
     }
 
-    return { token, user, login, loginSession, loginToken, logout };
+    return { token, user, login, loginToken, logout };
   },
   { persist: { pick: ["token"] } },
 );

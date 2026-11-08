@@ -17,7 +17,7 @@ import ConfigService from "./modules/configService";
 import PcController from "./routes/api/pc";
 import GoogleHomeController from "./routes/api/googleHome";
 import passport from "passport";
-import LdapStrategy from "passport-ldapauth";
+import createOidcStrategy from "./modules/oidc";
 import {
   Strategy as JwtStrategy,
   StrategyOptionsWithoutRequest as JwtOptions,
@@ -25,15 +25,9 @@ import {
 } from "passport-jwt";
 import UserController from "./routes/api/user";
 import session from "express-session";
-import { createOidcRouter, oidcSettingsFromEnv } from "./modules/oidc";
-import AuthMethods from "./modules/authMethods";
 
 const config = JSON.parse(fs.readFileSync("config.json", "utf8"));
 Container.set(ConfigService, new ConfigService(config));
-// Password (LDAP) sign-in can be turned off with LDAP_ENABLED=false; OIDC is on when OIDC_* is set.
-const oidcSettings = oidcSettingsFromEnv();
-const authMethods = new AuthMethods(process.env.LDAP_ENABLED !== "false" && !!config.ldap, !!oidcSettings);
-Container.set(AuthMethods, authMethods);
 useContainer(Container);
 const app = express();
 
@@ -49,18 +43,18 @@ app.use(
   })
 );
 app.use(compression());
-// Keep /api (including the OIDC browser redirects) out of the SPA fallback.
-app.use(history({ rewrites: [{ from: /^\/api\/.*$/, to: (context) => context.parsedUrl.path ?? "/" }] }));
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
 app.use(passport.initialize());
 app.use(passport.session());
-if (oidcSettings) {
-  app.use("/api/user/oidc", createOidcRouter(oidcSettings));
-}
+
+app.get("/api/user/oidc/login", passport.authenticate("oidc"));
+app.get(
+  "/api/user/oidc/callback",
+  passport.authenticate("oidc", { successRedirect: "/login?sso=1", failureRedirect: "/login?error=sso" })
+);
 
 useExpressServer(app, {
   routePrefix: "/api",
@@ -86,13 +80,13 @@ useExpressServer(app, {
   currentUserChecker: (action: Action) => action.request.user
 });
 
-if (authMethods.password) {
-  passport.use(
-    new LdapStrategy({
-      server: config.ldap
-    })
-  );
-}
+// The SPA history fallback and static files come after the API routes.
+app.use(history());
+app.use(express.static(path.join(__dirname, "public")));
+
+export const ready = createOidcStrategy().then((strategy) => {
+  passport.use("oidc", strategy);
+});
 
 const jwtConfig: JwtOptions = {
   ...config.jwt,

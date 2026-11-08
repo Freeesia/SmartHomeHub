@@ -1,4 +1,4 @@
-import app from "../app";
+import app, { ready } from "../app";
 import http from "node:http";
 
 /**
@@ -15,7 +15,7 @@ const server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
-server.listen(port, onListening);
+ready.then(() => server.listen(port, onListening));
 server.on("error", onError);
 
 /**

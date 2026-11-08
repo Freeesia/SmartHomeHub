@@ -36,7 +36,6 @@
     "openid-client": "^6.8.9",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
-    "passport-ldapauth": "^3.0.1",
     "ps4-waker": "^1.10.1",
     "reflect-metadata": "^0.2.2",
     "routing-controllers": "^0.11.3",

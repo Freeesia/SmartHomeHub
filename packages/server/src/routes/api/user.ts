@@ -10,14 +10,9 @@ import {
 } from "routing-controllers";
 import passport from "passport";
 import jwt, { SignOptions } from "jsonwebtoken";
-import { Container, Service } from "typedi";
+import { Service } from "typedi";
 import ConfigService from "../../modules/configService";
-import AuthMethods from "../../modules/authMethods";
-import { Request, Response, NextFunction } from "express";
-
-// Strategies are chosen per request so that password sign-in can be disabled by configuration.
-const loginAuthentication = (req: Request, res: Response, next: NextFunction) =>
-  passport.authenticate(Container.get(AuthMethods).loginStrategies)(req, res, next);
+import { Request } from "express";
 
 @Service()
 @JsonController("/user")
@@ -37,15 +32,9 @@ export default class UserController {
   }
 
   @Post("/login")
-  @UseBefore(loginAuthentication)
+  @UseBefore(passport.authenticate("jwt"))
   login(@CurrentUser({ required: true }) user: any): string {
     return jwt.sign(user, this.secretKey, this.config);
-  }
-
-  @Get("/methods")
-  methods(): { password: boolean; oidc: boolean } {
-    const methods = Container.get(AuthMethods);
-    return { password: methods.password, oidc: methods.oidc };
   }
 
   @Post("/logout")
