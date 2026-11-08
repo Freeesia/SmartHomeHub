@@ -18,18 +18,18 @@ export const useUserStore = defineStore(
       token.value ? jwtDecode<User>(token.value) : null,
     );
 
-    async function login() {
-      const res = await axios.get<string>("/api/user/jwt");
+    async function login(payload: { username: string; password: string }) {
+      const res = await axios.post<string>("/api/user/login", payload);
       token.value = res.data;
     }
 
     async function loginToken() {
-      if (!token.value) {
-        return;
-      }
       try {
+        // Without a stored token the server signs in from the session (after OpenID Connect).
         const res = await axios.post<string>("/api/user/login", null, {
-          headers: { Authorization: "Bearer " + token.value },
+          headers: token.value
+            ? { Authorization: "Bearer " + token.value }
+            : {},
         });
         token.value = res.data;
       } catch {

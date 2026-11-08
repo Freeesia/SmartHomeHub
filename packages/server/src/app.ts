@@ -17,7 +17,8 @@ import ConfigService from "./modules/configService";
 import PcController from "./routes/api/pc";
 import GoogleHomeController from "./routes/api/googleHome";
 import passport from "passport";
-import createOidcStrategy from "./modules/oidc";
+import LdapStrategy from "passport-ldapauth";
+import OpenIDConnectStrategy from "passport-openidconnect";
 import {
   Strategy as JwtStrategy,
   StrategyOptionsWithoutRequest as JwtOptions,
@@ -42,19 +43,21 @@ app.use(
     saveUninitialized: false
   })
 );
+// Browser navigations; registered before the SPA history fallback.
+app.get("/api/user/oidc/login", passport.authenticate("openidconnect"));
+app.get(
+  "/api/user/oidc/callback",
+  passport.authenticate("openidconnect", { successRedirect: "/", failureRedirect: "/login" })
+);
 app.use(compression());
+app.use(history());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname, "public")));
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.get("/api/user/oidc/login", passport.authenticate("oidc"));
-app.get(
-  "/api/user/oidc/callback",
-  passport.authenticate("oidc", { successRedirect: "/login?sso=1", failureRedirect: "/login?error=sso" })
-);
 
 useExpressServer(app, {
   routePrefix: "/api",
@@ -80,13 +83,33 @@ useExpressServer(app, {
   currentUserChecker: (action: Action) => action.request.user
 });
 
-// The SPA history fallback and static files come after the API routes.
-app.use(history());
-app.use(express.static(path.join(__dirname, "public")));
+passport.use(
+  new LdapStrategy({
+    server: config.ldap
+  })
+);
 
-export const ready = createOidcStrategy().then((strategy) => {
-  passport.use("oidc", strategy);
-});
+passport.use(
+  new OpenIDConnectStrategy(
+    {
+      issuer: process.env.OIDC_ISSUER!,
+      authorizationURL: process.env.OIDC_AUTHORIZATION_URL!,
+      tokenURL: process.env.OIDC_TOKEN_URL!,
+      userInfoURL: process.env.OIDC_USERINFO_URL!,
+      clientID: process.env.OIDC_CLIENT_ID!,
+      clientSecret: process.env.OIDC_CLIENT_SECRET!,
+      callbackURL: process.env.OIDC_CALLBACK_URL!,
+      scope: ["profile", "email"]
+    },
+    (issuer: string, profile: OpenIDConnectStrategy.Profile, done: OpenIDConnectStrategy.VerifyCallback) =>
+      done(null, {
+        uid: profile.username,
+        cn: profile.displayName,
+        sn: profile.name?.familyName,
+        mail: profile.emails?.[0]?.value
+      })
+  )
+);
 
 const jwtConfig: JwtOptions = {
   ...config.jwt,
