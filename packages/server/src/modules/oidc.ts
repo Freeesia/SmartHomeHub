@@ -1,8 +1,9 @@
-import { Router, Request, Response } from "express";
-import type * as OidcClient from "openid-client";
+import { Router, Request, Response, NextFunction } from "express";
+import passport from "passport";
 
 /**
- * OpenID Connect sign-in (authorization code flow with PKCE, state and nonce).
+ * OpenID Connect sign-in with openid-client's passport strategy
+ * (authorization code flow; PKCE and the request state are handled by the strategy).
  *
  * Settings come from environment variables so that config.json does not need to change:
  *   OIDC_ISSUER        e.g. https://id.example.com/realms/example
@@ -19,6 +20,8 @@ export interface OidcSettings {
   scope: string;
 }
 
+const STRATEGY = "oidc";
+
 export function oidcSettingsFromEnv(env: NodeJS.ProcessEnv = process.env): OidcSettings | undefined {
   const { OIDC_ISSUER, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET, OIDC_REDIRECT_URI } = env;
   if (!OIDC_ISSUER || !OIDC_CLIENT_ID || !OIDC_CLIENT_SECRET || !OIDC_REDIRECT_URI) {
@@ -33,18 +36,6 @@ export function oidcSettingsFromEnv(env: NodeJS.ProcessEnv = process.env): OidcS
   };
 }
 
-interface PendingLogin {
-  codeVerifier: string;
-  state: string;
-  nonce: string;
-}
-
-declare module "express-session" {
-  interface SessionData {
-    oidc?: PendingLogin;
-  }
-}
-
 /** The user object stored in the session and signed into the JWT, shaped like the former LDAP user. */
 export function userFromClaims(claims: Record<string, unknown>): Express.User {
   const uid = String(claims.preferred_username ?? claims.sub);
@@ -57,77 +48,63 @@ export function userFromClaims(claims: Record<string, unknown>): Express.User {
   } as Express.User;
 }
 
+/**
+ * Registers the "oidc" passport strategy once the issuer's discovery document is loaded.
+ * openid-client is ESM-only, so it is imported lazily from this CommonJS module.
+ * A failed discovery is retried on the next sign-in attempt.
+ */
+function strategyLoader(settings: OidcSettings): () => Promise<void> {
+  let ready: Promise<void> | undefined;
+  return () => {
+    ready ??= (async () => {
+      const client = await import("openid-client");
+      const { Strategy } = await import("openid-client/passport");
+      const config = await client.discovery(new URL(settings.issuer), settings.clientId, settings.clientSecret);
+      passport.use(
+        STRATEGY,
+        new Strategy({ config, callbackURL: settings.redirectUri, scope: settings.scope }, (tokens, verified) => {
+          const claims = tokens.claims();
+          if (!claims) {
+            return verified(new Error("ID token is missing"));
+          }
+          verified(null, userFromClaims(claims));
+        }),
+      );
+    })().catch((error) => {
+      ready = undefined;
+      throw error;
+    });
+    return ready;
+  };
+}
+
 export function createOidcRouter(settings: OidcSettings): Router {
-  // openid-client is ESM-only; load it lazily from this CommonJS module.
-  let configuration: Promise<OidcClient.Configuration> | undefined;
-  const load = () => import("openid-client");
-  const getConfiguration = () => {
-    if (!configuration) {
-      configuration = load()
-        .then((client) => client.discovery(new URL(settings.issuer), settings.clientId, settings.clientSecret))
-        .catch((error) => {
-          configuration = undefined; // retry discovery on the next request
-          throw error;
-        });
+  const ensureStrategy = strategyLoader(settings);
+  // Start loading in the background so the first sign-in is quick; errors surface on use.
+  ensureStrategy().catch((error) => console.error("OIDC discovery failed", error));
+
+  const authenticate = (options: passport.AuthenticateOptions) => async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await ensureStrategy();
+    } catch (error) {
+      console.error("OIDC is unavailable", error);
+      return res.redirect("/login?error=sso");
     }
-    return configuration;
+    passport.authenticate(STRATEGY, options)(req, res, next);
   };
 
   const router = Router();
-
-  router.get("/login", async (req: Request, res: Response) => {
-    try {
-      const client = await load();
-      const config = await getConfiguration();
-      const pending: PendingLogin = {
-        codeVerifier: client.randomPKCECodeVerifier(),
-        state: client.randomState(),
-        nonce: client.randomNonce(),
-      };
-      req.session.oidc = pending;
-      const url = client.buildAuthorizationUrl(config, {
-        redirect_uri: settings.redirectUri,
-        scope: settings.scope,
-        code_challenge: await client.calculatePKCECodeChallenge(pending.codeVerifier),
-        code_challenge_method: "S256",
-        state: pending.state,
-        nonce: pending.nonce,
-      });
-      req.session.save((err) => (err ? res.redirect("/login?error=sso") : res.redirect(url.href)));
-    } catch (error) {
-      console.error("OIDC login could not start", error);
-      res.redirect("/login?error=sso");
-    }
+  // Redirects to the identity provider.
+  router.get("/login", authenticate({}));
+  // Handles the authorization response, then signs the user in to the session.
+  router.get(
+    "/callback",
+    authenticate({ successRedirect: "/login?sso=1", failureRedirect: "/login?error=sso" }),
+  );
+  // Unexpected errors from the strategy (for example a token endpoint failure).
+  router.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
+    console.error("OIDC callback failed", error);
+    res.redirect("/login?error=sso");
   });
-
-  router.get("/callback", async (req: Request, res: Response) => {
-    const pending = req.session.oidc;
-    delete req.session.oidc;
-    if (!pending) {
-      return res.redirect("/login?error=sso");
-    }
-    try {
-      const client = await load();
-      const config = await getConfiguration();
-      // Rebuild the public callback URL (the app runs behind a TLS-terminating proxy).
-      const currentUrl = new URL(req.originalUrl, settings.redirectUri);
-      const tokens = await client.authorizationCodeGrant(config, currentUrl, {
-        pkceCodeVerifier: pending.codeVerifier,
-        expectedState: pending.state,
-        expectedNonce: pending.nonce,
-        idTokenExpected: true,
-      });
-      const claims = tokens.claims();
-      if (!claims) {
-        throw new Error("ID token is missing");
-      }
-      const user = userFromClaims(claims);
-      req.login(user, (err) => (err ? res.redirect("/login?error=sso") : res.redirect("/login?sso=1")));
-    } catch (error) {
-      console.error("OIDC callback failed", error);
-      res.redirect("/login?error=sso");
-    }
-  });
-
   return router;
 }
