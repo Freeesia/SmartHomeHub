@@ -24,12 +24,12 @@ export const useUserStore = defineStore(
     }
 
     async function loginToken() {
-      if (!token.value) {
-        return;
-      }
       try {
+        // Without a stored token the server signs in from the session (after OpenID Connect).
         const res = await axios.post<string>("/api/user/login", null, {
-          headers: { Authorization: "Bearer " + token.value },
+          headers: token.value
+            ? { Authorization: "Bearer " + token.value }
+            : {},
         });
         token.value = res.data;
       } catch {

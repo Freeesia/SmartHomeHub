@@ -18,6 +18,7 @@ import PcController from "./routes/api/pc";
 import GoogleHomeController from "./routes/api/googleHome";
 import passport from "passport";
 import LdapStrategy from "passport-ldapauth";
+import OpenIDConnectStrategy from "passport-openidconnect";
 import {
   Strategy as JwtStrategy,
   StrategyOptionsWithoutRequest as JwtOptions,
@@ -41,6 +42,12 @@ app.use(
     resave: false,
     saveUninitialized: false
   })
+);
+// Browser navigations; registered before the SPA history fallback.
+app.get("/api/user/oidc/login", passport.authenticate("openidconnect"));
+app.get(
+  "/api/user/oidc/callback",
+  passport.authenticate("openidconnect", { successRedirect: "/", failureRedirect: "/login" })
 );
 app.use(compression());
 app.use(history());
@@ -80,6 +87,22 @@ passport.use(
   new LdapStrategy({
     server: config.ldap
   })
+);
+
+passport.use(
+  new OpenIDConnectStrategy(
+    {
+      ...config.oidc,
+      scope: ["profile", "email"]
+    },
+    (issuer: string, profile: OpenIDConnectStrategy.Profile, done: OpenIDConnectStrategy.VerifyCallback) =>
+      done(null, {
+        uid: profile.username,
+        cn: profile.displayName,
+        sn: profile.name?.familyName,
+        mail: profile.emails?.[0]?.value
+      })
+  )
 );
 
 const jwtConfig: JwtOptions = {

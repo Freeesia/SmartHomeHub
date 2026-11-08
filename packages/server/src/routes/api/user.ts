@@ -32,7 +32,7 @@ export default class UserController {
   }
 
   @Post("/login")
-  @UseBefore(passport.authenticate(["ldapauth", "jwt"]))
+  @UseBefore(passport.authenticate(["ldapauth", "jwt", "session"]))
   login(@CurrentUser({ required: true }) user: any): string {
     return jwt.sign(user, this.secretKey, this.config);
   }

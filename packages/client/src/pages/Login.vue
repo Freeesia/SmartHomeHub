@@ -34,6 +34,9 @@
       submit
     </v-btn>
     <v-btn class="ma-1" @click="clear">clear</v-btn>
+    <v-btn class="ma-1" prepend-icon="mdi-key" href="/api/user/oidc/login">
+      Sign in with StudioFreesia ID
+    </v-btn>
   </v-form>
 </template>
 
